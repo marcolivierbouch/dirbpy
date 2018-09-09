@@ -65,7 +65,6 @@ class RequestHandler():
         return [ dir_to_test for dir_to_test in directory_found if dir_to_test is not None and dir_to_test != url ]
 
     def _request_thread(self, complete_url) -> str or None:
-        print(complete_url)
         response = requests.get(complete_url, proxies=self.proxy, verify=False)
         directory_url = None
         if response.status_code in self.status_code:
