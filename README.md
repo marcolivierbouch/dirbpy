@@ -20,5 +20,5 @@ If you are using the fish shell (https://github.com/fish-shell/fish-shell):
 
 `sudo cp dirbpy.fish /usr/share/fish/completions`
 
-## Recommadation
+## Recommendation
 I recommend using the SecLists: https://github.com/danielmiessler/SecLists
