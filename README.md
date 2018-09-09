@@ -18,7 +18,7 @@ Link to the real dirb: https://github.com/v0re/dirb
 
 Than add /opt/dirbpy to your PATH
 
-When using fish: `set $PATH /opt/dirbpy/`
+When using fish: `set PATH $PATH /opt/dirbpy/`
 
 If you are using the fish shell (https://github.com/fish-shell/fish-shell): 
 
