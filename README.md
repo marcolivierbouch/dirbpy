@@ -10,13 +10,15 @@ Link to the real dirb: https://github.com/v0re/dirb
 ## Install
 `git clone https://github.com/marcolivierbouch/dirbpy.git`
 
-`cd dirbpy`
+`mv dirbpy /opt/`
+
+`cd /opt/dirbpy/`
 
 `pip install -r requirements.txt`
 
-If you want to add it in your system:
+Than add /opt/dirbpy to your PATH
 
-`sudo cp dirbpy /usr/bin/`
+When using fish: `set $PATH /opt/dirbpy/`
 
 If you are using the fish shell (https://github.com/fish-shell/fish-shell): 
 
