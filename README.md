@@ -16,7 +16,7 @@ Link to the real dirb: https://github.com/v0re/dirb
 
 `pip install -r requirements.txt`
 
-Than add `/opt/dirbpy/src` to your PATH
+Then add `/opt/dirbpy/src` to your PATH
 
 If you are using the fish shell (https://github.com/fish-shell/fish-shell): 
 
