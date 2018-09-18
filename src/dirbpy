@@ -8,7 +8,7 @@ import glob
 
 from multiprocessing.dummy import Pool as ThreadPool
 
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
 class WordDictonary():
 
@@ -31,7 +31,7 @@ class WordDictonary():
         return value.rstrip()
 
 
-class RequestHandler():
+class URLBruteforcer():
     MAX_NUMBER_REQUEST = 30 
     VALID_STATUS_CODE = [200, 201, 202, 203, 301, 302, 400, 401, 403, 405]
     DIRECTORY_FOUND_MESSAGE = 'Directory => {} (Status code: {})'
@@ -43,8 +43,8 @@ class RequestHandler():
             import urllib3
             urllib3.disable_warnings()
         self.word_dictionary = word_dictionary
-        self.status_code = status_code or RequestHandler.VALID_STATUS_CODE
-        self.request_pool = ThreadPool(nb_thread or RequestHandler.MAX_NUMBER_REQUEST)
+        self.status_code = status_code or URLBruteforcer.VALID_STATUS_CODE
+        self.request_pool = ThreadPool(nb_thread or URLBruteforcer.MAX_NUMBER_REQUEST)
         self.proxy = proxy
         self.directory_to_ignore = directory_to_ignore
 
@@ -92,13 +92,13 @@ class RequestHandler():
 
 def number_of_thread(value) -> int:
     value = int(value)
-    if value > RequestHandler.MAX_NUMBER_REQUEST:
-        raise argparse.ArgumentError('The number of thread is to high. Current: {}, Max: {}'.format(value, RequestHandler.MAX_NUMBER_REQUEST))
+    if value > URLBruteforcer.MAX_NUMBER_REQUEST:
+        raise argparse.ArgumentError('The number of thread is to high. Current: {}, Max: {}'.format(value, URLBruteforcer.MAX_NUMBER_REQUEST))
     return value
 
 def do_request_with_dictionary(file_dict, host, thread, status_code, proxy, directory_to_ignore) -> None:
     word_dictionary = WordDictonary(file_dict)
-    request_handler = RequestHandler(host, word_dictionary, thread, status_code, {'https': proxy, 'http': proxy}, directory_to_ignore)
+    request_handler = URLBruteforcer(host, word_dictionary, thread, status_code, {'https': proxy, 'http': proxy}, directory_to_ignore)
     request_handler.send_requests_with_all_words()
 
 def main():
@@ -115,11 +115,11 @@ def main():
                         help='Input directory with dictionary (.txt).')
     parser.add_argument('-t', '--thread', 
                         type=number_of_thread,
-                        help='Number of threads the max value is {}'.format(RequestHandler.MAX_NUMBER_REQUEST))
+                        help='Number of threads the max value is {}'.format(URLBruteforcer.MAX_NUMBER_REQUEST))
     parser.add_argument('-s', '--status_code', 
                         nargs='*',
                         type=int,
-                        help='list of status code to accept the default list is: {}'.format(RequestHandler.VALID_STATUS_CODE))
+                        help='list of status code to accept the default list is: {}'.format(URLBruteforcer.VALID_STATUS_CODE))
     parser.add_argument('-r', '--remove_status_code', 
                         nargs='*',
                         type=int,
@@ -144,7 +144,7 @@ def main():
     host = args.url if args.url.endswith('/') else args.url + '/'
     proxy = args.proxy[0] if args.proxy else None
 
-    status_code = RequestHandler.VALID_STATUS_CODE
+    status_code = URLBruteforcer.VALID_STATUS_CODE
     if args.status_code:
         status_code = args.status_code
     if args.remove_status_code:

@@ -38,7 +38,7 @@ After you need to get inside the docker
 
 Command example
 
-`./dirbpy -f /opt/Seclist/Discovery/Web-Content/common.txt -u http://[....].com`
+`./dirbpy -f /opt/Seclist/Discovery/Web-Content/common.txt -u https://[....].com`
 
 ## Recommendation
 I recommend using the SecLists: https://github.com/danielmiessler/SecLists
