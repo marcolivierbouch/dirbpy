@@ -16,13 +16,29 @@ Link to the real dirb: https://github.com/v0re/dirb
 
 `pip install -r requirements.txt`
 
-Than add /opt/dirbpy to your PATH
-
-When using fish: `echo 'set PATH $PATH /opt/dirbpy/' >> ~/.config/fish/config.fish`
+Then add `/opt/dirbpy/src` to your PATH
 
 If you are using the fish shell (https://github.com/fish-shell/fish-shell): 
 
+`echo 'set PATH $PATH /opt/dirbpy/src' >> ~/.config/fish/config.fish`
+
+And add the completion file for fish: 
+
 `sudo cp dirbpy.fish /usr/share/fish/completions`
+
+## Dibpy with Docker
+
+Build the Docker
+
+`docker build -t dirbpy .`
+
+After you need to get inside the docker
+
+`docker run -it dirbpy /bin/sh`
+
+Command example
+
+`./dirbpy -f /opt/Seclist/Discovery/Web-Content/common.txt -u http://[....].com`
 
 ## Recommendation
 I recommend using the SecLists: https://github.com/danielmiessler/SecLists
