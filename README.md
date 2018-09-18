@@ -18,11 +18,25 @@ Link to the real dirb: https://github.com/v0re/dirb
 
 Than add /opt/dirbpy to your PATH
 
-When using fish: `echo 'set PATH $PATH /opt/dirbpy/' >> ~/.config/fish/config.fish`
+When using fish: `echo 'set PATH $PATH /opt/dirbpy/src' >> ~/.config/fish/config.fish`
 
 If you are using the fish shell (https://github.com/fish-shell/fish-shell): 
 
 `sudo cp dirbpy.fish /usr/share/fish/completions`
+
+## Dibpy with Docker
+
+Build the Docker
+
+`docker build -t dirbpy .`
+
+After you need to get inside the docker
+
+`docker run -it dirbpy /bin/sh`
+
+Command example
+
+`./src/dirbpy -f ../Seclist/Discovery/Web-Content/common.txt -u http://[....].com`
 
 ## Recommendation
 I recommend using the SecLists: https://github.com/danielmiessler/SecLists
