@@ -26,7 +26,7 @@ And add the completion file for fish:
 
 `sudo cp dirbpy.fish /usr/share/fish/completions`
 
-## Dibpy with Docker
+## Dirbpy with Docker
 
 Build the Docker
 
