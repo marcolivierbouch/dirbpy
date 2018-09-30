@@ -5,19 +5,29 @@ import argparse
 import threading
 import requests
 import glob
+import logging
 
+from urllib.parse import urlparse, urljoin
 from multiprocessing.dummy import Pool as ThreadPool
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
+
+BLUE  = "\033[1;34m"
+GREEN = "\033[0;32m"
+RESET = "\033[0;0m"
+
+FORMAT = '{}[%(asctime)-15s]{} {}[%(levelname)s]{} %(message)s'.format(GREEN, RESET, BLUE, RESET)
+logging.basicConfig(format=FORMAT, level=logging.INFO)
+main_logger = logging.getLogger()
 
 class WordDictonary():
 
     def __init__(self, word_dict):
         self.words = word_dict.readlines()
-        print('----------------------')
-        print('Generated words {}'.format(len(self.words)))
-        print('----------------------\n')
         self.current_index = 0
+
+    def __len__(self):
+        return len(self.words)
 
     def __iter__(self):
         self.current_index = 0
@@ -34,10 +44,10 @@ class WordDictonary():
 class URLBruteforcer():
     MAX_NUMBER_REQUEST = 30 
     VALID_STATUS_CODE = [200, 201, 202, 203, 301, 302, 400, 401, 403, 405]
-    DIRECTORY_FOUND_MESSAGE = 'Directory => {} (Status code: {})'
+    DIRECTORY_FOUND_MESSAGE = '++ Directory => {} (Status code: {})'
     URL_FOUND_MESSAGE = '+ {} (Status code: {})'
 
-    def __init__(self, host: str, word_dictionary: list, nb_thread: int , status_code, proxy: dict, directory_to_ignore=[]):
+    def __init__(self, host: str, word_dictionary: list, nb_thread: int , status_code: list, proxy: dict, directories_to_ignore=[]):
         self.host = host
         if 'https' in self.host:
             import urllib3
@@ -46,60 +56,61 @@ class URLBruteforcer():
         self.status_code = status_code or URLBruteforcer.VALID_STATUS_CODE
         self.request_pool = ThreadPool(nb_thread or URLBruteforcer.MAX_NUMBER_REQUEST)
         self.proxy = proxy
-        self.directory_to_ignore = directory_to_ignore
+        self.directories_to_ignore = directories_to_ignore
+        self.logger = logging.getLogger(__name__)
 
     def send_requests_with_all_words(self, url=None) -> None:
         url = url or self.host
-        print('\n*** Scanning URL: {} ***\n'.format(url))
-        url_completed = [ url + (word[1:] if word.startswith('/') else word) for word in self.word_dictionary if word != '/' and word != '' ]
-        directory_found = self.request_pool.map(self._request_thread, url_completed)
-        dir_with_no_none = self._remove_invalid_url_from_directory_found(directory_found, url)
+        self.logger.info('Scanning URL: {}'.format(url))
+        url_completed = [ urljoin(url, word) for word in self.word_dictionary if word != '/' and word != '' ]
+        directories_found = self.request_pool.map(self._request_thread, url_completed)
+        dir_with_no_none = self._remove_invalid_url_from_directory_found(directories_found, url)
         for directory in dir_with_no_none: 
             if self._is_directory_to_ignore(directory):
                 self.send_requests_with_all_words(directory)
 
-    def _is_directory_to_ignore(self, directory) -> bool:
-        return False if any([ True for directory_to_ignore in self.directory_to_ignore if directory_to_ignore in directory ]) else True 
+    def _is_directory_to_ignore(self, directory: str) -> bool:
+        return False if any([ True for directories_to_ignore in self.directories_to_ignore if directories_to_ignore in directory ]) else True 
 
-    def _remove_invalid_url_from_directory_found(self, directory_found, url) -> list:
-        return [ dir_to_test for dir_to_test in directory_found if dir_to_test is not None and dir_to_test != url ]
+    def _remove_invalid_url_from_directory_found(self, directories_found: list, url: str) -> list:
+        return [ dir_to_test for dir_to_test in directories_found if dir_to_test is not None and dir_to_test != url ]
 
-    def _request_thread(self, complete_url) -> str or None:
+    def _request_thread(self, complete_url: str) -> str or None:
         try:
             response = requests.get(complete_url, proxies=self.proxy, verify=False)
         except Exception as e:
-            print('Error: {}'.format(str(e)))
+            self.logger.error(str(e))
         else:
             directory_url = None
             if response.status_code in self.status_code:
                 # We need to check for redirection if we are redirected we want the first url
                 # Normaly get redirected it returns a 200 status_code but it not always the real status code 
                 if response.history and response.history[0].status_code in self.status_code:
-                    print(self.URL_FOUND_MESSAGE.format(response.history[0].url, str(response.history[0].status_code)))
+                    self.logger.info(self.URL_FOUND_MESSAGE.format(response.history[0].url, str(response.history[0].status_code)))
                 elif response.url.endswith('/'):
-                    print(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
+                    self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
                     directory_url = response.url
                 else:
-                    print(self.URL_FOUND_MESSAGE.format(response.url, str(response.status_code)))
+                    self.logger.info(self.URL_FOUND_MESSAGE.format(response.url, str(response.status_code)))
             elif response.status_code == 404:
                 # We need to check for redirection if we are redirected we want the first url
                 # Normaly when we find a directory like /css/ it returns a 404
                 if response.history and response.history[0].status_code in self.status_code:
-                    print(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.history[0].status_code)))
+                    self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.history[0].status_code)))
                     directory_url = response.url
             return directory_url 
 
+def do_request_with_dictionary(file_dict, host: str, thread: int, status_code: list, proxy: str, directories_to_ignore: list) -> None:
+    word_dictionary = WordDictonary(file_dict)
+    main_logger.info('Generated words {}'.format(len(word_dictionary)))
+    request_handler = URLBruteforcer(host, word_dictionary, thread, status_code, {'https': proxy, 'http': proxy}, directories_to_ignore)
+    request_handler.send_requests_with_all_words()
 
 def number_of_thread(value) -> int:
     value = int(value)
     if value > URLBruteforcer.MAX_NUMBER_REQUEST:
         raise argparse.ArgumentError('The number of thread is to high. Current: {}, Max: {}'.format(value, URLBruteforcer.MAX_NUMBER_REQUEST))
     return value
-
-def do_request_with_dictionary(file_dict, host, thread, status_code, proxy, directory_to_ignore) -> None:
-    word_dictionary = WordDictonary(file_dict)
-    request_handler = URLBruteforcer(host, word_dictionary, thread, status_code, {'https': proxy, 'http': proxy}, directory_to_ignore)
-    request_handler.send_requests_with_all_words()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -141,7 +152,7 @@ def main():
     if not args.directory and not args.file:
         parser.error('Need a file (--file, -f) or a directory (--directory, -d) as input.')
 
-    host = args.url if args.url.endswith('/') else args.url + '/'
+    host = args.url
     proxy = args.proxy[0] if args.proxy else None
 
     status_code = URLBruteforcer.VALID_STATUS_CODE
@@ -150,13 +161,13 @@ def main():
     if args.remove_status_code:
         status_code = [ code for code in status_code if code not in args.remove_status_code ]
 
-    directory_to_ignore = args.ignore or []
+    directories_to_ignore = args.ignore or []
     if args.directory:
         for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):
-            print('\n* Current file: {}'.format(file))
-            do_request_with_dictionary(open(file, 'r'), host, args.thread, status_code, proxy, directory_to_ignore)
+            main_logger.info('Current file: {}'.format(file))
+            do_request_with_dictionary(open(file, 'r'), host, args.thread, status_code, proxy, directories_to_ignore)
     else:
-        do_request_with_dictionary(args.file, host, args.thread, status_code, proxy, directory_to_ignore)
+        do_request_with_dictionary(args.file, host, args.thread, status_code, proxy, directories_to_ignore)
         
 if __name__ == "__main__":
     main()
