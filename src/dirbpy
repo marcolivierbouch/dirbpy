@@ -18,7 +18,7 @@ RESET = "\033[0;0m"
 
 FORMAT = '{}[%(asctime)s]{} {}[%(levelname)s]{} %(message)s'.format(GREEN, RESET, BLUE, RESET)
 logging.basicConfig(format=FORMAT, level=logging.INFO)
-main_logger = logging.getLogger()
+root_logger = logging.getLogger()
 
 class WordDictonary():
 
@@ -105,7 +105,7 @@ class URLBruteforcer():
 
 def do_request_with_dictionary(file_dict, host: str, thread: int, status_code: list, proxy: str, directories_to_ignore: list) -> None:
     word_dictionary = WordDictonary(file_dict)
-    main_logger.info('Generated words {}'.format(len(word_dictionary)))
+    root_logger.info('Generated words {}'.format(len(word_dictionary)))
     params = {}
     if thread:
         params['nb_thread'] = thread
@@ -177,7 +177,7 @@ def main():
     directories_to_ignore = args.ignore or []
     if args.directory:
         for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):
-            main_logger.info('Current file: {}'.format(file))
+            root_logger.info('Current file: {}'.format(file))
             do_request_with_dictionary(open(file, 'r'), host, args.thread, status_code, proxy, directories_to_ignore)
     else:
         do_request_with_dictionary(args.file, host, args.thread, status_code, proxy, directories_to_ignore)
