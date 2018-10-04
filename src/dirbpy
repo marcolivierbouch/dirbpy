@@ -10,7 +10,7 @@ import logging
 from urllib.parse import urljoin
 from multiprocessing.dummy import Pool as ThreadPool
 
-__version__ = '1.1.3'
+__version__ = '1.1.4'
 
 BLUE  = "\033[1;34m"
 GREEN = "\033[0;32m"
