@@ -10,7 +10,7 @@ import logging
 from urllib.parse import urljoin
 from multiprocessing.dummy import Pool as ThreadPool
 
-__version__ = '1.1.2'
+__version__ = '1.1.3'
 
 BLUE  = "\033[1;34m"
 GREEN = "\033[0;32m"
@@ -26,7 +26,7 @@ class WordDictonary():
         self.words = word_dict.readlines()
         self.current_index = 0
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.words)
 
     def __iter__(self):
@@ -62,7 +62,7 @@ class URLBruteforcer():
         self.directories_to_ignore = directories_to_ignore
         self.logger = logging.getLogger(__name__)
 
-    def send_requests_with_all_words(self, url=None) -> None:
+    def send_requests_with_all_words(self, url: str = None) -> None:
         url = url or self.host
         self.logger.info('Scanning URL: {}'.format(url))
         url_completed = [ urljoin(url, word) for word in self.word_dictionary if word != '/' and word != '' ]
@@ -174,7 +174,7 @@ def main():
     if args.remove_status_code:
         status_code = [ code for code in status_code if code not in args.remove_status_code ]
 
-    directories_to_ignore = args.ignore or []
+    directories_to_ignore = args.ignore
     if args.directory:
         for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):
             root_logger.info('Current file: {}'.format(file))
