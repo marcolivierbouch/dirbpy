@@ -5,14 +5,17 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name='dirbpy',
-    version='1.1.9',
+    version='1.2.5',
     author='Marc-Olivier Bouchard',
     author_email='mo.bouchard1997@gmail.com',
-    #  url='https://github.com/marcolivierbouch/dirbpy',
-    url='https://github.com/marcolivierbouch/dirbpy/tree/setup_pypi',
+    url='https://github.com/marcolivierbouch/dirbpy',
     description='This is the new version of dirb in python.',
     long_description=long_description,
-    packages=setuptools.find_packages(),
+    packages=[
+        "_dirbpy",
+    ],
+    package_dir={"": "src"},
+    platforms=["unix", "linux", "osx"],
     install_requires=[
         "argparse",
         "requests",
@@ -22,5 +25,7 @@ setuptools.setup(
         "License :: OSI Approved :: GNU Affero General Public License v3",
         "Operating System :: OS Independent",
     ],
+    py_modules=["dirbpy"],
+    zip_safe=False,
 )
 

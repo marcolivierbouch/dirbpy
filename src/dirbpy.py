@@ -5,11 +5,8 @@ import argparse
 import glob
 import logging
 
-#  from dirbpy import URLBruteforcer, WordDictonary
-#  import URLBruteforcer, WordDictonary
 from _dirbpy.URLBruteforcer import URLBruteforcer
 from _dirbpy.URLBruteforcer import WordDictonary
-#  from src.dirbpy import URLBruteforcer
 
 import requests
 
