@@ -2,23 +2,30 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import threading
-import requests
+#  import threading
 import glob
 import logging
 
 from urllib.parse import urljoin
 from multiprocessing.dummy import Pool as ThreadPool
 
+import requests
+
 __version__ = '1.1.4'
 
-BLUE  = "\033[1;34m"
+BLUE = "\033[1;34m"
 GREEN = "\033[0;32m"
 RESET = "\033[0;0m"
 
+NUMBER_OF_THREAD_PARAMETER_ERROR = 'The number of thread is to high. Current: {}, Max: {}'
+
 FORMAT = '{}[%(asctime)s]{} {}[%(levelname)s]{} %(message)s'.format(GREEN, RESET, BLUE, RESET)
 logging.basicConfig(format=FORMAT, level=logging.INFO)
-root_logger = logging.getLogger()
+ROOT_LOGGER = logging.getLogger()
+
+def disable_https_warnings():
+    import urllib3
+    urllib3.disable_warnings()
 
 class WordDictonary():
 
@@ -47,14 +54,17 @@ class URLBruteforcer():
     DIRECTORY_FOUND_MESSAGE = '++ Directory => {} (Status code: {})'
     URL_FOUND_MESSAGE = '+ {} (Status code: {})'
 
-    proxy_default_dict = {'https': None, 'http': None }
+    proxy_default_dict = {'https': None, 'http': None}
 
-    def __init__(self, host: str, word_dictionary: WordDictonary, nb_thread: int = MAX_NUMBER_REQUEST,
-                 status_code: list = VALID_STATUS_CODE, proxy: dict = proxy_default_dict, directories_to_ignore: list = []):
+    def __init__(self, host: str,
+                 word_dictionary: WordDictonary,
+                 nb_thread: int = MAX_NUMBER_REQUEST,
+                 status_code: list = VALID_STATUS_CODE,
+                 proxy: dict = proxy_default_dict,
+                 directories_to_ignore: list = []):
         self.host = host
         if 'https' in self.host:
-            import urllib3
-            urllib3.disable_warnings()
+            disable_https_warnings()
         self.word_dictionary = word_dictionary
         self.status_code = status_code
         self.request_pool = ThreadPool(nb_thread)
@@ -65,7 +75,7 @@ class URLBruteforcer():
     def send_requests_with_all_words(self, url: str = None) -> None:
         url = url or self.host
         self.logger.info('Scanning URL: {}'.format(url))
-        url_completed = [ urljoin(url, word) for word in self.word_dictionary if word != '/' and word != '' ]
+        url_completed = [urljoin(url, word) for word in self.word_dictionary if word not in ('/', '')]
         directories_found = self.request_pool.map(self._request_thread, url_completed)
         dir_with_no_none = self._remove_invalid_url_from_directory_found(directories_found, url)
         for directory in dir_with_no_none:
@@ -73,10 +83,11 @@ class URLBruteforcer():
                 self.send_requests_with_all_words(directory)
 
     def _is_directory_to_ignore(self, directory: str) -> bool:
-        return False if any([ True for directories_to_ignore in self.directories_to_ignore if directories_to_ignore in directory ]) else True
+        return False if any([True for directories_to_ignore in self.directories_to_ignore if directories_to_ignore in directory]) else True
 
     def _remove_invalid_url_from_directory_found(self, directories_found: list, url: str) -> list:
-        return [ dir_to_test for dir_to_test in directories_found if dir_to_test is not None and dir_to_test != url ]
+        return [dir_to_test for dir_to_test in directories_found 
+                if dir_to_test is not None and dir_to_test != url]
 
     def _request_thread(self, complete_url: str) -> str or None:
         try:
@@ -105,7 +116,7 @@ class URLBruteforcer():
 
 def do_request_with_dictionary(file_dict, host: str, thread: int, status_code: list, proxy: str, directories_to_ignore: list) -> None:
     word_dictionary = WordDictonary(file_dict)
-    root_logger.info('Generated words {}'.format(len(word_dictionary)))
+    ROOT_LOGGER.info('Generated words {}'.format(len(word_dictionary)))
     params = {}
     if thread:
         params['nb_thread'] = thread
@@ -122,7 +133,7 @@ def do_request_with_dictionary(file_dict, host: str, thread: int, status_code: l
 def number_of_thread(value) -> int:
     value = int(value)
     if value > URLBruteforcer.MAX_NUMBER_REQUEST:
-        raise argparse.ArgumentError('The number of thread is to high. Current: {}, Max: {}'.format(value, URLBruteforcer.MAX_NUMBER_REQUEST))
+        raise argparse.ArgumentError(NUMBER_OF_THREAD_PARAMETER_ERROR.format(value, URLBruteforcer.MAX_NUMBER_REQUEST))
     return value
 
 def main():
@@ -172,12 +183,12 @@ def main():
     if args.status_code:
         status_code = args.status_code
     if args.remove_status_code:
-        status_code = [ code for code in status_code if code not in args.remove_status_code ]
+        status_code = [code for code in status_code if code not in args.remove_status_code]
 
     directories_to_ignore = args.ignore
     if args.directory:
         for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):
-            root_logger.info('Current file: {}'.format(file))
+            ROOT_LOGGER.info('Current file: {}'.format(file))
             do_request_with_dictionary(open(file, 'r'), host, args.thread, status_code, proxy, directories_to_ignore)
     else:
         do_request_with_dictionary(args.file, host, args.thread, status_code, proxy, directories_to_ignore)
