@@ -3,12 +3,13 @@ import setuptools
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
-setup(
-    name='Dirbpy',
-    version='1.1.5',
+setuptools.setup(
+    name='dirbpy',
+    version='1.1.9',
     author='Marc-Olivier Bouchard',
     author_email='mo.bouchard1997@gmail.com',
-    url='https://github.com/marcolivierbouch/dirbpy',
+    #  url='https://github.com/marcolivierbouch/dirbpy',
+    url='https://github.com/marcolivierbouch/dirbpy/tree/setup_pypi',
     description='This is the new version of dirb in python.',
     long_description=long_description,
     packages=setuptools.find_packages(),
