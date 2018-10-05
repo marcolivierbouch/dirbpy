@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name='dirbpy',
-    version='1.2.10',
+    version='1.2.13',
     author='Marc-Olivier Bouchard',
     author_email='mo.bouchard1997@gmail.com',
     url='https://github.com/marcolivierbouch/dirbpy',
@@ -13,6 +13,7 @@ setuptools.setup(
     platforms=["unix", "linux", "osx"],
     scripts=["bin/dirbpy"],
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     packages=[
         "_dirbpy",
     ],
