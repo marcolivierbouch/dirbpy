@@ -1,2 +1,5 @@
-__all__ = ["URLBruteforcer"]
+__all__ = [
+    "URLBruteforcer", 
+    "main"
+]
 
