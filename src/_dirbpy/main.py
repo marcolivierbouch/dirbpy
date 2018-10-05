@@ -10,7 +10,7 @@ import requests
 from _dirbpy.URLBruteforcer import URLBruteforcer
 from _dirbpy.URLBruteforcer import WordDictonary
 
-__version__ = '1.2.9'
+__version__ = '1.2.10'
 
 BLUE = "\033[1;34m"
 GREEN = "\033[0;32m"
