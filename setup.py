@@ -5,17 +5,19 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name='dirbpy',
-    version='1.2.6',
+    version='1.2.8',
     author='Marc-Olivier Bouchard',
     author_email='mo.bouchard1997@gmail.com',
     url='https://github.com/marcolivierbouch/dirbpy',
     description='This is the new version of dirb in python.',
+    platforms=["unix", "linux", "osx"],
+    #  entry_points={"console_scripts": ["dirbpy=dirbpy:main"]},
+    scripts=["bin/dirbpy"],
     long_description=long_description,
     packages=[
         "_dirbpy",
     ],
     package_dir={"": "src"},
-    platforms=["unix", "linux", "osx"],
     install_requires=[
         "argparse",
         "requests",
