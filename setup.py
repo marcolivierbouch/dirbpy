@@ -11,7 +11,6 @@ setuptools.setup(
     url='https://github.com/marcolivierbouch/dirbpy',
     description='This is the new version of dirb in python.',
     platforms=["unix", "linux", "osx"],
-    #  entry_points={"console_scripts": ["dirbpy=dirbpy:main"]},
     scripts=["bin/dirbpy"],
     long_description=long_description,
     packages=[
