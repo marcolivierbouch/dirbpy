@@ -7,7 +7,10 @@ This is a new version of dirb but in python. This version is faster than the nor
 
 Link to the real dirb: https://github.com/v0re/dirb
 
-## Install
+## Install with pip
+`pip install dirbpy`
+
+## Install from source
 `git clone https://github.com/marcolivierbouch/dirbpy.git`
 
 `mv dirbpy /opt/`
