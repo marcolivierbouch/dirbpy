@@ -1,2 +1,2 @@
-from URLBruteforcer import *
-name = 'dirbpy'
+__all__ = ["URLBruteforcer"]
+
