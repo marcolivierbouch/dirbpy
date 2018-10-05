@@ -18,23 +18,11 @@ Install with pip
 ----------------
 ``pip install dirbpy``
 
-Install from source
--------------------
+Fish completions
+----------------
 ``git clone https://github.com/marcolivierbouch/dirbpy.git``
 
-``mv dirbpy /opt/``
-
-``cd /opt/dirbpy/``
-
-``pip install -r requirements.txt``
-
-Then add ``/opt/dirbpy/src`` to your PATH
-
-If you are using the fish shell (https://github.com/fish-shell/fish-shell): 
-
-``echo 'set PATH $PATH /opt/dirbpy/src' >> ~/.config/fish/config.fish``
-
-And add the completion file for fish: 
+``cd dirbpy``
 
 ``sudo cp dirbpy.fish /usr/share/fish/completions``
 
