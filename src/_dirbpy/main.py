@@ -7,8 +7,7 @@ import logging
 
 import requests
 
-from _dirbpy.URLBruteforcer import URLBruteforcer
-from _dirbpy.URLBruteforcer import WordDictonary
+from _dirbpy.URLBruteforcer import URLBruteforcer, WordDictonary
 
 __version__ = '1.2.14'
 

@@ -40,20 +40,21 @@ class URLBruteforcer():
     DIRECTORY_FOUND_MESSAGE = '++ Directory => {} (Status code: {})'
     URL_FOUND_MESSAGE = '+ {} (Status code: {})'
 
-    proxy_default_dict = {'https': None, 'http': None}
+    PROXY_DEFAULT_DICT = {'https': None, 'http': None}
 
     def __init__(self, host: str,
                  word_dictionary: list,
                  nb_thread: int = MAX_NUMBER_REQUEST,
                  status_code: list = VALID_STATUS_CODE,
-                 proxy: dict = proxy_default_dict,
+                 proxy: dict = PROXY_DEFAULT_DICT,
                  directories_to_ignore: list = []):
         self.host = host
         if 'https' in self.host:
             disable_https_warnings()
         self.word_dictionary = word_dictionary
         self.status_code = status_code
-        self.request_pool = ThreadPool(nb_thread)
+        self.nb_thread = nb_thread
+        self.request_pool = ThreadPool(self.nb_thread)
         self.proxy = proxy
         self.directories_to_ignore = directories_to_ignore
         self.logger = logging.getLogger(__name__)
