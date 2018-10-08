@@ -4,7 +4,6 @@
 import sys
 sys.path.append('src')
 
-from testfixtures import LogCapture
 from unittest.mock import MagicMock
 from unittest import mock
 
