@@ -62,12 +62,15 @@ class URLBruteforcer():
     def send_requests_with_all_words(self, url: str = None) -> None:
         url = url or self.host
         self.logger.info('Scanning URL: {}'.format(url))
-        url_completed = [urljoin(url, word) for word in self.word_dictionary if word not in ('/', '')]
+        url_completed = self._generate_complete_url_with_word(url)
         directories_found = self.request_pool.map(self.request_thread, url_completed)
         dir_filtered = self._remove_invalid_url_from_directory_found(directories_found, url)
         for directory in dir_filtered:
             if not self._is_directory_to_ignore(directory):
                 self.send_requests_with_all_words(directory)
+    
+    def _generate_complete_url_with_word(self, url):
+        return [urljoin(url, word) for word in self.word_dictionary if word not in ('/', '')]
 
     def _is_directory_to_ignore(self, directory: str) -> bool:
         directory_found_to_ignore = [True for directory_to_ignore in self.directories_to_ignore 
@@ -84,9 +87,9 @@ class URLBruteforcer():
         except Exception as e:
             self.logger.error(str(e))
         else:
-            return self.analyse_response(response)
+            return self._analyse_response(response)
             
-    def analyse_response(self, response) -> str or None:
+    def _analyse_response(self, response) -> str or None:
         directory_url = None
         if response.status_code in self.status_code:
             # We need to check for redirection if we are redirected we want the first url

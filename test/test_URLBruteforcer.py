@@ -3,10 +3,12 @@
 
 import sys
 sys.path.append('src')
- 
-from _dirbpy.URLBruteforcer import URLBruteforcer, WordDictonary
 
+from testfixtures import LogCapture
 from unittest.mock import MagicMock
+from unittest import mock
+
+from _dirbpy.URLBruteforcer import URLBruteforcer, WordDictonary
 
 HOST = 'http://localhost/'
 WORD_LIST = ['css', 'js', 'test']
@@ -51,9 +53,6 @@ def test_Given_URLBruteforcer_When_ParmeterProxyIsNotSet_Then_DefaultValueIsUsed
 
 
 def test_Given_URLBruteforcer_When_ParmeterDirectoryToIgnoreIsNotSet_Then_DefaultValueIsUsed():
-
-    from _dirbpy.URLBruteforcer import URLBruteforcer, WordDictonary
-
     file_mock = MagicMock()
     file_mock.readlines = MagicMock(return_value=WORD_LIST)
     word_dict = WordDictonary(file_mock)
@@ -65,17 +64,43 @@ def test_Given_URLBruteforcer_When_ParmeterDirectoryToIgnoreIsNotSet_Then_Defaul
     url_bruteforcer = URLBruteforcer(HOST, word_dict, **params)
     assert url_bruteforcer.directories_to_ignore == [] 
 
-def test_Given_URLBruteforcer_When_URLHaveHtts_Then_WarningsAreDisable():
-    pass
+@mock.patch('_dirbpy.URLBruteforcer.disable_https_warnings')
+def test_Given_URLBruteforcer_When_URLHaveHtts_Then_WarningsAreDisable(disable_warnings_mock):
+    disable_warnings_mock.return_value = True 
+    file_mock = MagicMock()
+    file_mock.readlines = MagicMock(return_value=WORD_LIST)
+    word_dict = WordDictonary(file_mock)
+    htts_host = 'https://localhost/'
+    url_bruteforcer = URLBruteforcer(htts_host, word_dict)
+    disable_warnings_mock.assert_called()
 
-def test_Given_URLBruteforcer_When_WordIsAnEmptyString_Then_WordIsNotUseToCompleteURL():
-    pass
+@mock.patch('requests.get')
+def test_Given_URLBruteforcer_When_WordIsAnEmptyString_Then_WordIsNotUseToCompleteURL(get_mock):
+    file_mock = MagicMock()
+    words = ['']
+    file_mock.readlines = MagicMock(return_value=words)
+    word_dict = WordDictonary(file_mock)
+    url_bruteforcer = URLBruteforcer(HOST, word_dict)
+    url_bruteforcer.send_requests_with_all_words()
+    assert False == get_mock.called
 
-def test_Given_URLBruteforcer_When_WordIsASlash_Then_WordIsNotUseToCompleteURL():
-    pass
+@mock.patch('requests.get')
+def test_Given_URLBruteforcer_When_WordIsASlash_Then_WordIsNotUseToCompleteURL(get_mock):
+    file_mock = MagicMock()
+    words = ['/']
+    file_mock.readlines = MagicMock(return_value=words)
+    word_dict = WordDictonary(file_mock)
+    url_bruteforcer = URLBruteforcer(HOST, word_dict)
+    url_bruteforcer.send_requests_with_all_words()
+    assert False == get_mock.called
 
-def test_Given_URLBruteforcer_When_RequestReturn200_Then_LoggerShowTheURL():
-    pass
+@mock.patch('requests.get')
+def test_Given_URLBruteforcer_When_RequestReturn200_Then_LoggerShowTheURL(get_mock):
+    file_mock = MagicMock()
+    file_mock.readlines = MagicMock(return_value=WORD_LIST)
+    word_dict = WordDictonary(file_mock)
+    url_bruteforcer = URLBruteforcer(HOST, word_dict)
+    url_bruteforcer.send_requests_with_all_words()
 
 def test_Given_URLBruteforcer_When_RequestReturn201_Then_LoggerShowTheURL():
     pass
