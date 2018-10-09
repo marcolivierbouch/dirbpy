@@ -1,11 +1,12 @@
 import setuptools
+from src._dirbpy import __version__
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name='dirbpy',
-    version='1.2.15',
+    version=__version__,
     author='Marc-Olivier Bouchard',
     author_email='mo.bouchard1997@gmail.com',
     url='https://github.com/marcolivierbouch/dirbpy',
