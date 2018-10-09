@@ -1,0 +1,14 @@
+sudo: false
+language: python
+python:
+  - '3.6'
+install:
+  - pip install --upgrade tox
+script: tox
+deploy:
+  provider: pypi
+  user: marcolivierbouch
+  password:
+    secure: WW42pVbdhHTE1bmvxV2t+49NQrrZxs4s2EdAKWBsKxVpgcC/QDLxluLgvW3SKVhXTStzmW1sRLIX6k/SSNT02Urdhs1iMV+Ei8Y+IPtov+g/CPKbAq2lzMppwmQQfrwuoe13EpYVWvwi6JUQx/qObvyn8CHSuWTTLiIEcLZdNJdvZSemyiWjLnuG0OsoJOzqVYFAnALgwF0sY3SnBMeksONza8V6qrc29a/q3l3u4pU4Sgwd56F9jK4QlyhWzWDXb8x4KPE+fnMi+ILvSbSitH+d4ifLt78LGy9WWDCfuU+RSRqW8gmfRzqkHz4Jrd1wDiHjufuveNZ/kizE6/10WWKduGaAKe2RpWCKEaVhRUS9aaJqkYEr4tYfRzkYUR0GZUyVbkiXyhcdE/WGLzDmDx/k046rF+4CUUxA4nxu5C9gimNJxkoDAfdAcxSStqTBkBhEzm0qghEV2IdF6YFlf9fQ9to4Q/cNLIFxLRfDgUS/bW3FwBUlH88AcwVCxRSO42ZFSxQ4062sWEz3q9KdI8FMhoXdhMKMmis7PFHNZfWfjDIvtE9pQ1FNmTYPv16tEiJizGtwyeX6mPVJeJ20bT1HWt2uVBKWQ8i2isWLWNb4VBPoFopoiPxdsIoLfZU5T67gyx4TYoerltLCTT9n6kt28DGh99KWGmQVk+RFpRg=
+  on:
+    branch: master

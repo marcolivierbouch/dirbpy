@@ -9,6 +9,7 @@ import requests
 
 from _dirbpy.URLBruteforcer import URLBruteforcer
 from _dirbpy.WordDictonary import WordDictonary
+from _dirbpy import __version__
 
 DIRBPY_COOL_LOOKING = '''
 ________   .__        ___.
@@ -20,7 +21,6 @@ ________   .__        ___.
 '''
 
 AUTHOR = 'Marc-Olivier Bouchard'
-__version__ = '1.2.16'
 
 BLUE = "\033[1;34m"
 GREEN = "\033[0;32m"
