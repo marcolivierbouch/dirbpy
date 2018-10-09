@@ -7,8 +7,19 @@ import logging
 
 import requests
 
-from _dirbpy.URLBruteforcer import URLBruteforcer, WordDictonary
+from _dirbpy.URLBruteforcer import URLBruteforcer
+from _dirbpy.WordDictonary import WordDictonary
 
+DIRBPY_COOL_LOOKING = '''
+________   .__        ___.
+\______ \  |__|_______\_ |__  ______  ___.__.
+ |    |  \ |  |\_  __ \| __ \ \____ \<   |  |
+ |    `   \|  | |  | \/| \_\ \|  |_> >\___  |
+/_______  /|__| |__|   |___  /|   __/ / ____|
+        \/                 \/ |__|    \/
+'''
+
+AUTHOR = 'Marc-Olivier Bouchard'
 __version__ = '1.2.14'
 
 BLUE = "\033[1;34m"
@@ -44,6 +55,9 @@ def number_of_thread(value) -> int:
     return value
 
 def main():
+    print(DIRBPY_COOL_LOOKING)
+    print('Author: {}'.format(AUTHOR))
+    print('Version: {}\n'.format(__version__))
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--url',
                         type=str,
