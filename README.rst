@@ -5,7 +5,8 @@ Dirbpy
     :target: https://pypi.org/project/dirbpy/
 .. image:: https://img.shields.io/pypi/pyversions/dirbpy.svg
     :target: https://pypi.org/project/dirbpy/
- 
+.. image:: https://travis-ci.org/marcolivierbouch/dirbpy.svg?branch=master
+    :target: https://travis-ci.org/marcolivierbouch/dirbpy
 Description
 -----------
 Dirbpy - URL Bruteforcer
