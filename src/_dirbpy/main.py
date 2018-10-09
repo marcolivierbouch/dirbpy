@@ -20,7 +20,7 @@ ________   .__        ___.
 '''
 
 AUTHOR = 'Marc-Olivier Bouchard'
-__version__ = '1.2.14'
+__version__ = '1.2.15'
 
 BLUE = "\033[1;34m"
 GREEN = "\033[0;32m"
