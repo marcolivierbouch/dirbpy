@@ -5,7 +5,8 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name='dirbpy',
-    version='1.2.15',
+    version='1.2.16',
+    license="MIT license",
     author='Marc-Olivier Bouchard',
     author_email='mo.bouchard1997@gmail.com',
     url='https://github.com/marcolivierbouch/dirbpy',
@@ -23,8 +24,8 @@ setuptools.setup(
         "requests",
     ],
     classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU Affero General Public License v3",
+        "Programming Language :: Python :: 3.7",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     py_modules=["dirbpy"],
