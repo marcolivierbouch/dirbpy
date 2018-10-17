@@ -7,8 +7,8 @@ Dirbpy
     :target: https://pypi.org/project/dirbpy/
 .. image:: https://travis-ci.org/marcolivierbouch/dirbpy.svg?branch=master
     :target: https://travis-ci.org/marcolivierbouch/dirbpy
-.. image:: https://codecov.io/gh/codecov/dirbpy/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/codecov/dirbpy
+.. image:: https://codecov.io/gh/marcolivierbouch/dirbpy/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/marcolivierbouch/dirbpy
 
 Description
 -----------
