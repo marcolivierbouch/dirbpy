@@ -9,7 +9,7 @@ import requests
 
 from _dirbpy.URLBruteforcer import URLBruteforcer
 from _dirbpy.WordDictonary import WordDictonary
-from _dirbpy import __version__
+from _dirbpy import __version__, __author__
 
 DIRBPY_COOL_LOOKING = '''
 ________   .__        ___.
@@ -19,8 +19,6 @@ ________   .__        ___.
 /_______  /|__| |__|   |___  /|   __/ / ____|
         \/                 \/ |__|    \/
 '''
-
-AUTHOR = 'Marc-Olivier Bouchard'
 
 BLUE = "\033[1;34m"
 GREEN = "\033[0;32m"
@@ -56,7 +54,7 @@ def number_of_thread(value) -> int:
 
 def main():
     print(DIRBPY_COOL_LOOKING)
-    print('Author: {}'.format(AUTHOR))
+    print('Author: {}'.format(__author__))
     print('Version: {}\n'.format(__version__))
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--url',
