@@ -4,5 +4,5 @@ __all__ = [
     "WordDictonary"
 ]
 
-__version__ = '1.2.20'
+__version__ = '1.2.21'
 
