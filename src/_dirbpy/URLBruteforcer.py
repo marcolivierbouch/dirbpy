@@ -3,6 +3,7 @@
 
 import glob
 import logging
+import difflib
 
 from urllib.parse import urljoin, urlparse
 from multiprocessing.dummy import Pool as ThreadPool
@@ -15,7 +16,7 @@ def disable_https_warnings():
 
 class URLBruteforcer():
     MAX_NUMBER_REQUEST = 30
-    VALID_STATUS_CODE = [200, 201, 202, 203, 301, 302, 400, 401, 403, 405]
+    VALID_STATUS_CODE = [200, 201, 202, 203, 301, 302, 400, 401, 403, 405, 500]
     DIRECTORY_FOUND_MESSAGE = '++ Directory => {} (Status code: {})'
     URL_FOUND_MESSAGE = '+ {} (Status code: {})'
     SCANNING_URL_MESSAGE = 'Scanning URL: {}'
@@ -65,27 +66,31 @@ class URLBruteforcer():
         try:
             response = requests.get(complete_url, proxies=self.proxy, verify=False)
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(str(e) + ' With url: {}'.format(complete_url))
         else:
             return self._analyse_response(response)
             
     def _analyse_response(self, response) -> str or None:
-        directory_url = None
+        directory_url = []
         if response.status_code in self.status_code:
             # We need to check for redirection if we are redirected we want the first url
             # Normaly get redirected it returns a 200 status_code but it not always the real status code
-            if response.history and response.history[0].status_code in self.status_code:
-                self.logger.info(self.URL_FOUND_MESSAGE.format(response.history[0].url, str(response.history[0].status_code)))
-            elif response.url.endswith('/'):
-                self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
-                directory_url = response.url
-            else:
+            if response.history:
+                for response_in_history in response.history:
+                    response_removed = response.url.replace(response_in_history.url, '')
+                    if response_removed == '/':
+                        self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
+                        directory_url.append(response.url)
+                    else:
+                        self.logger.info(self.URL_FOUND_MESSAGE.format(response_in_history.url, str(response_in_history.status_code)))
+            if not response.url.endswith('/'):
                 self.logger.info(self.URL_FOUND_MESSAGE.format(response.url, str(response.status_code)))
         elif response.status_code == 404:
             # We need to check for redirection if we are redirected we want the first url
             # Normaly when we find a directory like /css/ it returns a 404
             if response.history and response.history[0].status_code in self.status_code:
-                self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.history[0].status_code)))
-                directory_url = response.url
-        return directory_url
+                if response.history[0].url.endswith('/'):
+                    self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.history[0].url, str(response.history[0].status_code)))
+                    directory_url.append(response.history[0].url)
+        return directory_url[0] if directory_url else None # TODO return list
 
