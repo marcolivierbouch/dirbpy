@@ -76,7 +76,7 @@ class URLBruteforcer():
             return self._analyse_response(response)
             
     def _analyse_response(self, response) -> list:
-        directory_url = []
+        directories_url_found = []
         if response.status_code in self.status_code:
             # We need to check for redirection if we are redirected we want the first url
             # Normaly get redirected it returns a 200 status_code but it not always the real status code
@@ -85,19 +85,21 @@ class URLBruteforcer():
                     response_removed = response.url.replace(response_in_history.url, '')
                     if response_removed == '/':
                         self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
-                        directory_url.append(response.url)
+                        directories_url_found.append(response.url)
                     else:
                         self.logger.info(self.URL_FOUND_MESSAGE.format(response_in_history.url, str(response_in_history.status_code)))
-            if response.url.endswith('/'):
-                self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
-            else:
-                self.logger.info(self.URL_FOUND_MESSAGE.format(response.url, str(response.status_code)))
+            if response.url not in directories_url_found:
+                if response.url.endswith('/'): 
+                    self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
+                    directories_url_found.append(response.url)
+                else:
+                    self.logger.info(self.URL_FOUND_MESSAGE.format(response.url, str(response.status_code)))
         elif response.status_code == 404:
             # We need to check for redirection if we are redirected we want the first url
             # Normaly when we find a directory like /css/ it returns a 404
             if response.history and response.history[0].status_code in self.status_code:
                 if response.url.endswith('/'):
                     self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.history[0].status_code)))
-                    directory_url.append(response.url)
-        return directory_url
+                    directories_url_found.append(response.url)
+        return directories_url_found
 
