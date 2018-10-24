@@ -45,12 +45,15 @@ class URLBruteforcer():
         self.logger.info(self.SCANNING_URL_MESSAGE.format(url))
         url_completed = self._generate_complete_url_with_word(url)
         directories_found = self.request_pool.map(self._request_thread, url_completed)
-        flat_list = [item for sublist in directories_found for item in sublist] # TODO generate_flat_list
-        dir_filtered = self._remove_invalid_url_from_directory_found(directories_found, url)
+        flat_list_of_directories = self._generate_fat_list_with_list_of_list(directories_found)
+        dir_filtered = self._remove_invalid_url_from_directory_found(flat_list_of_directories, url)
         for directory in dir_filtered:
             if not self._is_directory_to_ignore(directory):
                 self.send_requests_with_all_words(directory)
-    
+   
+    def _generate_fat_list_with_list_of_list(self, list_of_list):
+        return [item for sublist in list_of_list for item in sublist]
+
     def _generate_complete_url_with_word(self, url):
         return [urljoin(url, word) for word in self.word_dictionary if word not in ('/', '')]
 
@@ -63,15 +66,16 @@ class URLBruteforcer():
         return [dir_to_test for dir_to_test in directories_found 
                 if dir_to_test is not None and dir_to_test != url]
 
-    def _request_thread(self, complete_url: str) -> str or None:
+    def _request_thread(self, complete_url: str) -> list:
         try:
             response = requests.get(complete_url, proxies=self.proxy, verify=False)
         except Exception as e:
-            self.logger.error(str(e) + ' With url: {}'.format(complete_url))
+            self.logger.error(str(e) + '. URL: {}'.format(complete_url))
+            return []
         else:
             return self._analyse_response(response)
             
-    def _analyse_response(self, response) -> str or None:
+    def _analyse_response(self, response) -> list:
         directory_url = []
         if response.status_code in self.status_code:
             # We need to check for redirection if we are redirected we want the first url
@@ -84,7 +88,9 @@ class URLBruteforcer():
                         directory_url.append(response.url)
                     else:
                         self.logger.info(self.URL_FOUND_MESSAGE.format(response_in_history.url, str(response_in_history.status_code)))
-            if not response.url.endswith('/'):
+            if response.url.endswith('/'):
+                self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
+            else:
                 self.logger.info(self.URL_FOUND_MESSAGE.format(response.url, str(response.status_code)))
         elif response.status_code == 404:
             # We need to check for redirection if we are redirected we want the first url
@@ -93,5 +99,5 @@ class URLBruteforcer():
                 if response.url.endswith('/'):
                     self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.history[0].status_code)))
                     directory_url.append(response.url)
-        return directory_url[0] if directory_url else None # TODO return list
+        return directory_url
 

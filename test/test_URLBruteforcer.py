@@ -371,8 +371,9 @@ def test_Given_URLBruteforcer_When_RequestThrow_Then_ErrorIsCatchLoggerPrintErro
     logger_mock = MagicMock() 
     logger_mock.info = MagicMock() 
     
-    url_bruteforcer = URLBruteforcer(HOST, WORD_LIST, logger=logger_mock)
+    word_list = ['css']
+    url_bruteforcer = URLBruteforcer(HOST, word_list, logger=logger_mock)
     url_bruteforcer.send_requests_with_all_words()
 
     assert logger_mock.error.called
-    logger_mock.error.assert_called_with(ERROR_MESSAGE)
+    logger_mock.error.assert_called_with(ERROR_MESSAGE + '. URL: ' + HOST + word_list[0])
