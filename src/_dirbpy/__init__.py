@@ -4,7 +4,7 @@ __all__ = [
     "WordDictonary"
 ]
 
-__version__ = '1.2.23'
+__version__ = '1.3.0'
 
 __author__ = "Marc-Olivier Bouchard"
 

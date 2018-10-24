@@ -9,7 +9,7 @@ from unittest import mock
 
 from _dirbpy.URLBruteforcer import URLBruteforcer
 
-HOST = 'http://localhost/'
+HOST = 'http://localhost.com/'
 WORD_LIST = ['css', 'js', 'test']
 
 def test_Given_URLBruteforcer_When_ParmeterNbThreadIsNotSet_Then_DefaultValueIsUsed():
@@ -164,7 +164,7 @@ def test_Given_URLBruteforcer_When_RequestReturn404ButHistoryHaveRequsest_Then_L
     response_history_mock.status_code = 200
     response_mock.history = []
     response_mock.history.append(response_history_mock)
-    response_mock.url = 'https://localhost.com/'
+    response_mock.url = 'https://localhost.com/js/'
     get_mock.return_value = response_mock
 
     logger_mock = MagicMock()
@@ -224,7 +224,7 @@ def test_Given_URLBruteforcer_When_RequestReturn200ButWasRedirection_Then_Logger
     response_history_mock.url = HOST
     response_mock.history = []
     response_mock.history.append(response_history_mock)
-    response_mock.url = 'https://localhost.com/'
+    response_mock.url = HOST 
     get_mock.return_value = response_mock
 
     logger_mock = MagicMock() 
@@ -235,7 +235,30 @@ def test_Given_URLBruteforcer_When_RequestReturn200ButWasRedirection_Then_Logger
 
     EXPECTED_LOG = URLBruteforcer.URL_FOUND_MESSAGE.format(response_history_mock.url, str(response_history_mock.status_code))
     get_mock.assert_called()
-    logger_mock.info.assert_called_with(EXPECTED_LOG)
+    logger_mock.info.assert_any_call(EXPECTED_LOG)
+
+
+@mock.patch('requests.get')
+def test_Given_URLBruteforcer_When_RequestReturn301ButWasRedirectionAndRemovedSlash_Then_LoggerShowTheDirectoryURL(get_mock):
+    response_mock = mock.Mock()
+    response_mock.status_code = 301
+    response_history_mock = mock.Mock()
+    response_history_mock.status_code = 200
+    response_history_mock.url = HOST + 'css'
+    response_mock.history = []
+    response_mock.history.append(response_history_mock)
+    response_mock.url = HOST + 'css/'
+    get_mock.return_value = response_mock
+
+    logger_mock = MagicMock() 
+    logger_mock.info = MagicMock() 
+
+    url_bruteforcer = URLBruteforcer(HOST, WORD_LIST, logger=logger_mock)
+    url_bruteforcer.send_requests_with_all_words()
+
+    EXPECTED_LOG = URLBruteforcer.DIRECTORY_FOUND_MESSAGE.format(response_mock.url, str(response_mock.status_code))
+    get_mock.assert_called()
+    logger_mock.info.assert_any_call(EXPECTED_LOG)
 
 @mock.patch('requests.get')
 def test_Given_URLBruteforcer_When_RequestReturnURLThatEndWithSlash_Then_LoggerShowTheDirectory(get_mock):
@@ -371,8 +394,9 @@ def test_Given_URLBruteforcer_When_RequestThrow_Then_ErrorIsCatchLoggerPrintErro
     logger_mock = MagicMock() 
     logger_mock.info = MagicMock() 
     
-    url_bruteforcer = URLBruteforcer(HOST, WORD_LIST, logger=logger_mock)
+    word_list = ['css']
+    url_bruteforcer = URLBruteforcer(HOST, word_list, logger=logger_mock)
     url_bruteforcer.send_requests_with_all_words()
 
     assert logger_mock.error.called
-    logger_mock.error.assert_called_with(ERROR_MESSAGE)
+    logger_mock.error.assert_called_with(ERROR_MESSAGE + '. URL: ' + HOST + word_list[0])
