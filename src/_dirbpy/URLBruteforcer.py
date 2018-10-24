@@ -45,6 +45,7 @@ class URLBruteforcer():
         self.logger.info(self.SCANNING_URL_MESSAGE.format(url))
         url_completed = self._generate_complete_url_with_word(url)
         directories_found = self.request_pool.map(self._request_thread, url_completed)
+        flat_list = [item for sublist in directories_found for item in sublist] # TODO generate_flat_list
         dir_filtered = self._remove_invalid_url_from_directory_found(directories_found, url)
         for directory in dir_filtered:
             if not self._is_directory_to_ignore(directory):
@@ -89,8 +90,8 @@ class URLBruteforcer():
             # We need to check for redirection if we are redirected we want the first url
             # Normaly when we find a directory like /css/ it returns a 404
             if response.history and response.history[0].status_code in self.status_code:
-                if response.history[0].url.endswith('/'):
-                    self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.history[0].url, str(response.history[0].status_code)))
-                    directory_url.append(response.history[0].url)
+                if response.url.endswith('/'):
+                    self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.history[0].status_code)))
+                    directory_url.append(response.url)
         return directory_url[0] if directory_url else None # TODO return list
 
