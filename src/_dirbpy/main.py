@@ -73,11 +73,11 @@ def main():
     parser.add_argument('-s', '--status_code',
                         nargs='*',
                         type=int,
-                        help='list of status code to accept the default list is: {}'.format(URLBruteforcer.VALID_STATUS_CODE))
+                        help='List of status code to accept the default list is: {}'.format(URLBruteforcer.VALID_STATUS_CODE))
     parser.add_argument('-r', '--remove_status_code',
                         nargs='*',
                         type=int,
-                        help='list of status code to remove from list')
+                        help='List of status code to remove from list')
     parser.add_argument('-p', '--proxy',
                         nargs='*',
                         type=str,
