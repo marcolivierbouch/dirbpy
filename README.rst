@@ -32,17 +32,17 @@ Fish completions
 
 Dirbpy with Docker
 ------------------
-Build the Docker
+Pull the Docker
 
-``docker build -t dirbpy .``
+``docker pull marcolivierbouch/dirbpy``
 
 After you need to get inside the docker
 
-``docker run -it dirbpy /bin/sh``
+``docker run -it marcolivierbouch/dirbpy``
 
 Command example
 
-``./dirbpy -f /opt/Seclist/Discovery/Web-Content/common.txt -u https://[....].com``
+``dirbpy -o https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt -u https://[....].com``
 
 Recommendations
 ---------------

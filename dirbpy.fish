@@ -1,5 +1,6 @@
 complete -c dirbpy -s u -l url --description "This is the url to scan"
 complete -c dirbpy -s f -l file --description "Input file with words"
+complete -c dirbpy -s o -l online --description "Online dictionary"
 complete -c dirbpy -s d -l directory --description "Input directory with dictionay"
 complete -c dirbpy -s t -l thread -ends --description "Number of threads"
 complete -c dirbpy -s s -l status_code --description "list of status code to accept"
