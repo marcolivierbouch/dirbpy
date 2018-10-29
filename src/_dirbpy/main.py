@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+
 import argparse
 import glob
 import logging
@@ -30,20 +32,22 @@ FORMAT = '{}[%(asctime)s]{} {}[%(levelname)s]{} %(message)s'.format(GREEN, RESET
 logging.basicConfig(format=FORMAT, level=logging.INFO)
 ROOT_LOGGER = logging.getLogger()
 
-def do_request_with_dictionary(file_dict, host: str, thread: int, status_code: list, proxy: str, directories_to_ignore: list) -> None:
-    word_dictionary = WordDictonary(file_dict)
-    ROOT_LOGGER.info('Generated words {}'.format(len(word_dictionary)))
-    params = {}
-    if thread:
-        params['nb_thread'] = thread
-    if status_code:
-        params['status_code'] = status_code
-    if proxy:
-        params['proxy'] = proxy
-    if directories_to_ignore:
-        params['directories_to_ignore'] = directories_to_ignore
+def remove_none_value_in_kwargs(params_dict):
+    return {k: v for k, v in params_dict.items() if v is not None}
 
-    request_handler = URLBruteforcer(host, word_dictionary, **params)
+def do_request_with_online_file(dict_url: str, host: str, **kwargs) -> None:
+    data = requests.get(dict_url)
+    dict_list = str(data.content).replace('\\r', ' ').replace('\\n', ' ').split()
+    use_url_bruteforcer(dict_list, host, **kwargs)
+
+def do_request_with_dictionary(file_dict, host: str, **kwargs) -> None:
+    word_dictionary = WordDictonary(file_dict)
+    use_url_bruteforcer(word_dictionary, host, **kwargs)
+
+def use_url_bruteforcer(words: list, host: str, **kwargs) -> None:
+    params = remove_none_value_in_kwargs(kwargs) 
+    ROOT_LOGGER.info('Generated words {}'.format(len(words)))
+    request_handler = URLBruteforcer(host, words, **params)
     request_handler.send_requests_with_all_words()
 
 def number_of_thread(value) -> int:
@@ -52,10 +56,7 @@ def number_of_thread(value) -> int:
         raise argparse.ArgumentError(NUMBER_OF_THREAD_PARAMETER_ERROR.format(value, URLBruteforcer.MAX_NUMBER_REQUEST))
     return value
 
-def main():
-    print(DIRBPY_COOL_LOOKING)
-    print('Author: {}'.format(__author__))
-    print('Version: {}\n'.format(__version__))
+def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--url',
                         type=str,
@@ -64,6 +65,9 @@ def main():
     parser.add_argument('-f', '--file',
                         type=argparse.FileType('r'),
                         help='Input file with words.')
+    parser.add_argument('-o', '--online',
+                        type=str,
+                        help='URL with raw dictionary')
     parser.add_argument('-d', '--directory',
                         type=str,
                         help='Input directory with dictionary (.txt).')
@@ -89,11 +93,23 @@ def main():
     parser.add_argument('-v', '--version',
                         action='version',
                         version='%(prog)s {version}'.format(version=__version__))
+    return parser
 
+def get_parsed_args(parser, args):
+    args_parsed = parser.parse_args(args)
 
-    args = parser.parse_args()
-    if not args.directory and not args.file:
-        parser.error('Need a file (--file, -f) or a directory (--directory, -d) as input.')
+    if not args_parsed.directory and not args_parsed.file and not args_parsed.online:
+        parser.error('Need a file (-f/--file) or a directory (-d/--directory) or an online file (-o/--online) as input.')
+
+    return args_parsed
+
+def main():
+    print(DIRBPY_COOL_LOOKING)
+    print('Author: {}'.format(__author__))
+    print('Version: {}\n'.format(__version__))
+   
+    parser = get_parser()
+    args = get_parsed_args(parser, sys.argv[1:])
 
     host = args.url
     proxy = args.proxy[0] if args.proxy else None
@@ -102,14 +118,21 @@ def main():
     if args.status_code:
         status_code = args.status_code
     if args.remove_status_code:
-        status_code = [code for code in status_code if code not in args.remove_status_code]
+        status_code = [code for code in URLBruteforcer.VALID_STATUS_CODE if code not in args.remove_status_code]
 
     directories_to_ignore = args.ignore
+    dict_url = None
+    if args.online:
+        dict_url = args.online
+
+    params = {"nb_thread": args.thread, "status_code": status_code, "proxy": proxy, "directories_to_ignore": directories_to_ignore}
+
     if args.directory:
         for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):
             ROOT_LOGGER.info('Current file: {}'.format(file))
-            do_request_with_dictionary(open(file, 'r'), host, args.thread, status_code, proxy, directories_to_ignore)
+            do_request_with_dictionary(open(file, 'r'), host, **params) 
+    elif dict_url:
+        do_request_with_online_file(dict_url, host, **params)
     else:
-        do_request_with_dictionary(args.file, host, args.thread, status_code, proxy, directories_to_ignore)
-
+        do_request_with_dictionary(args.file, host, **params)
 
