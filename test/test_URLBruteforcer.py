@@ -12,6 +12,10 @@ from _dirbpy.URLBruteforcer import URLBruteforcer
 HOST = 'http://localhost.com/'
 WORD_LIST = ['css', 'js', 'test']
 
+class fakeRecord():
+    def __init__(self, msg):
+        self.msg = msg
+
 def test_GivenURLBruteforcer_WhenParmeterNbThreadIsNotSet_ThenDefaultValueIsUsed():
     params = {
         'status_code': [200],
@@ -422,13 +426,13 @@ def test_GivenURLBruteforcer_WhenNotLoggingDuplicate_ThenListOfLoggedMessageIsSe
     assert hasattr(url_bruteforcer, 'logged_message')
 
 @mock.patch('requests.get')
-def test_GivenURLBruteforcer_WhenNotLoggingDuplicate_ThenFilterShouldNoDisplay(get_mock):
+def test_GivenURLBruteforcer_WhenNotLoggingDuplicate_ThenFilterShouldNotDisplaySameMsg(get_mock):
     logger_mock = MagicMock() 
     logger_mock.info = MagicMock() 
 
     word_list = ['css']
     args = {"logger": logger_mock, "duplicate_log": False}
     url_bruteforcer = URLBruteforcer(HOST, word_list, **args)
-    url_bruteforcer.no_duplicate_log_filter = MagicMock(return_value="")
-    url_bruteforcer.send_requests_with_all_words() 
-    url_bruteforcer.no_duplicate_log_filter.assert_called
+    record = fakeRecord("msg")
+    assert url_bruteforcer.no_duplicate_log_filter(record)
+    assert not url_bruteforcer.no_duplicate_log_filter(record)
