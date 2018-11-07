@@ -93,6 +93,9 @@ def get_parser():
     parser.add_argument('-v', '--version',
                         action='version',
                         version='%(prog)s {version}'.format(version=__version__))
+    parser.add_argument('--no_duplicate',
+                        action='store_false',
+                        help='Don\'t display duplicate log')
     return parser
 
 def get_parsed_args(parser, args):
@@ -125,7 +128,7 @@ def main():
     if args.online:
         dict_url = args.online
 
-    params = {"nb_thread": args.thread, "status_code": status_code, "proxy": proxy, "directories_to_ignore": directories_to_ignore}
+    params = {"nb_thread": args.thread, "status_code": status_code, "proxy": proxy, "directories_to_ignore": directories_to_ignore, "duplicate_log": args.no_duplicate}
 
     if args.directory:
         for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):

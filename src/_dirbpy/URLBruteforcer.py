@@ -5,6 +5,7 @@ import glob
 import logging
 import difflib
 
+from logging import Logger
 from urllib.parse import urljoin, urlparse
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -22,13 +23,15 @@ class URLBruteforcer():
     SCANNING_URL_MESSAGE = 'Scanning URL: {}'
     PROXY_DEFAULT_DICT = {'https': None, 'http': None}
 
-    def __init__(self, host: str,
-                 word_dictionary: list,
-                 nb_thread: int = MAX_NUMBER_REQUEST,
-                 status_code: list = VALID_STATUS_CODE,
-                 proxy: dict = PROXY_DEFAULT_DICT,
-                 directories_to_ignore: list = [],
-                 logger = logging.getLogger(__name__) ):
+    def __init__(self, host:            str,
+                 word_dictionary:       list,
+                 nb_thread:             int    = MAX_NUMBER_REQUEST,
+                 status_code:           list   = VALID_STATUS_CODE,
+                 proxy:                 dict   = PROXY_DEFAULT_DICT,
+                 directories_to_ignore: list   = [],
+                 logger:                Logger = logging.getLogger(__name__),
+                 duplicate_log:         bool   = True):
+
         self.host = host
         if 'https' in urlparse(self.host).scheme:
             disable_https_warnings()
@@ -39,6 +42,15 @@ class URLBruteforcer():
         self.proxy = proxy
         self.directories_to_ignore = directories_to_ignore
         self.logger = logger
+        if not duplicate_log:
+            self.logged_message = []
+            self.logger.addFilter(self.no_duplicate_log_filter)
+
+    def no_duplicate_log_filter(self, record):
+        if record.msg not in self.logged_message:
+            self.logged_message.append(record.msg)
+            return True
+        return False
 
     def send_requests_with_all_words(self, url: str = None) -> None:
         url = url or self.host
@@ -88,7 +100,9 @@ class URLBruteforcer():
                         directories_url_found.append(response.url)
                     else:
                         self.logger.info(self.URL_FOUND_MESSAGE.format(response_in_history.url, str(response_in_history.status_code)))
+
             if response.url not in directories_url_found:
+            # Analyse de response if we didn't print it earlier
                 if response.url.endswith('/'): 
                     self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
                     directories_url_found.append(response.url)

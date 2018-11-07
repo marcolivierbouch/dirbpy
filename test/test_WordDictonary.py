@@ -10,21 +10,21 @@ from _dirbpy.WordDictonary import WordDictonary
 
 WORD_LIST = ['css', 'js', 'test']
 
-def test_Given_WordDictionay_When_ItsGenerated_Then_TheFileInParameterIsRead():
+def test_GivenWordDictionay_WhenItsGenerated_ThenTheFileInParameterIsRead():
     file_mock = MagicMock()
     file_mock.readlines = MagicMock(return_value=WORD_LIST)
     word_dict = WordDictonary(file_mock)
     
     file_mock.readlines.assert_called()
 
-def test_Given_WordDictionay_When_ItsGenerated_Then_CurrentIndexIsSetAtZero():
+def test_GivenWordDictionay_WhenItsGenerated_ThenCurrentIndexIsSetAtZero():
     file_mock = MagicMock()
     file_mock.readlines = MagicMock(return_value=WORD_LIST)
     word_dict = WordDictonary(file_mock)
 
     assert word_dict.current_index == 0
 
-def test_Given_WordDictionay_When_GetLength_Then_CurrentSizeIsReturned():
+def test_GivenWordDictionay_WhenGetLength_ThenCurrentSizeIsReturned():
     file_mock = MagicMock()
     file_mock.readlines = MagicMock(return_value=WORD_LIST)
 
@@ -32,7 +32,7 @@ def test_Given_WordDictionay_When_GetLength_Then_CurrentSizeIsReturned():
 
     assert len(WORD_LIST) == len(word_dict)
 
-def test_Given_WordDictionay_When_Iter_Then_AllWordAreReturned():
+def test_GivenWordDictionay_WhenIter_ThenAllWordAreReturned():
     file_mock = MagicMock()
     file_mock.readlines = MagicMock(return_value=WORD_LIST)
 
@@ -42,7 +42,7 @@ def test_Given_WordDictionay_When_Iter_Then_AllWordAreReturned():
         assert WORD_LIST[i] == word
         i += 1
 
-def test_Given_WordDictionay_When_IterSecondTime_Then_CurrentIndexIsSetAtZero():
+def test_GivenWordDictionay_WhenIterSecondTime_ThenCurrentIndexIsSetAtZero():
     file_mock = MagicMock()
     file_mock.readlines = MagicMock(return_value=WORD_LIST)
 
