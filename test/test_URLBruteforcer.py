@@ -12,7 +12,7 @@ from _dirbpy.URLBruteforcer import URLBruteforcer
 HOST = 'http://localhost.com/'
 WORD_LIST = ['css', 'js', 'test']
 
-def test_Given_URLBruteforcer_When_ParmeterNbThreadIsNotSet_Then_DefaultValueIsUsed():
+def test_GivenURLBruteforcer_WhenParmeterNbThreadIsNotSet_ThenDefaultValueIsUsed():
     params = {
         'status_code': [200],
         'proxy': {'http': None, 'https': None},
@@ -22,7 +22,7 @@ def test_Given_URLBruteforcer_When_ParmeterNbThreadIsNotSet_Then_DefaultValueIsU
     assert url_bruteforcer.nb_thread == URLBruteforcer.MAX_NUMBER_REQUEST
 
 
-def test_Given_URLBruteforcer_When_ParmeterStatusCodeListIsNotSet_Then_DefaultValueIsUsed():
+def test_GivenURLBruteforcer_WhenParmeterStatusCodeListIsNotSet_ThenDefaultValueIsUsed():
     params = {
         'nb_thread': 1,
         'proxy': {'http': None, 'https': None},
@@ -32,7 +32,7 @@ def test_Given_URLBruteforcer_When_ParmeterStatusCodeListIsNotSet_Then_DefaultVa
     assert url_bruteforcer.status_code == URLBruteforcer.VALID_STATUS_CODE
 
 
-def test_Given_URLBruteforcer_When_ParmeterProxyIsNotSet_Then_DefaultValueIsUsed():
+def test_GivenURLBruteforcer_WhenParmeterProxyIsNotSet_ThenDefaultValueIsUsed():
     params = {
         'nb_thread': 1,
         'status_code': [200],
@@ -42,7 +42,7 @@ def test_Given_URLBruteforcer_When_ParmeterProxyIsNotSet_Then_DefaultValueIsUsed
     assert url_bruteforcer.proxy == URLBruteforcer.PROXY_DEFAULT_DICT
 
 
-def test_Given_URLBruteforcer_When_ParmeterDirectoryToIgnoreIsNotSet_Then_DefaultValueIsUsed():
+def test_GivenURLBruteforcer_WhenParmeterDirectoryToIgnoreIsNotSet_ThenDefaultValueIsUsed():
     params = {
         'nb_thread': 1,
         'status_code': [200],
@@ -52,35 +52,35 @@ def test_Given_URLBruteforcer_When_ParmeterDirectoryToIgnoreIsNotSet_Then_Defaul
     assert url_bruteforcer.directories_to_ignore == [] 
 
 @mock.patch('_dirbpy.URLBruteforcer.disable_https_warnings')
-def test_Given_URLBruteforcer_When_URLHaveHttps_Then_WarningsAreDisable(disable_warnings_mock):
+def test_GivenURLBruteforcer_WhenURLHaveHttps_ThenWarningsAreDisable(disable_warnings_mock):
     disable_warnings_mock.return_value = True 
     htts_host = 'https://localhost/'
     url_bruteforcer = URLBruteforcer(htts_host, WORD_LIST)
     disable_warnings_mock.assert_called()
 
 @mock.patch('_dirbpy.URLBruteforcer.disable_https_warnings')
-def test_Given_URLBruteforcer_When_URLDoesntHaveHttps_Then_WarningsAreNotDisable(disable_warnings_mock):
+def test_GivenURLBruteforcer_WhenURLDoesntHaveHttps_ThenWarningsAreNotDisable(disable_warnings_mock):
     disable_warnings_mock.return_value = True 
     htts_host = 'http://httpslocalhost/'
     url_bruteforcer = URLBruteforcer(htts_host, WORD_LIST)
     disable_warnings_mock.assert_not_called()
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_WordIsAnEmptyString_Then_WordIsNotUseToCompleteURL(get_mock):
+def test_GivenURLBruteforcer_WhenWordIsAnEmptyString_ThenWordIsNotUseToCompleteURL(get_mock):
     words = ['']
     url_bruteforcer = URLBruteforcer(HOST, words)
     url_bruteforcer.send_requests_with_all_words()
     assert False == get_mock.called
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_WordIsASlash_Then_WordIsNotUseToCompleteURL(get_mock):
+def test_GivenURLBruteforcer_WhenWordIsASlash_ThenWordIsNotUseToCompleteURL(get_mock):
     words = ['/']
     url_bruteforcer = URLBruteforcer(HOST, words)
     url_bruteforcer.send_requests_with_all_words()
     assert False == get_mock.called
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturn200_Then_LoggerShowTheURL(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturn200_ThenLoggerShowTheURL(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 200
     response_mock.history = None
@@ -100,7 +100,7 @@ def test_Given_URLBruteforcer_When_RequestReturn200_Then_LoggerShowTheURL(get_mo
 
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturn201_Then_LoggerShowTheURL(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturn201_ThenLoggerShowTheURL(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 201
     response_mock.history = None
@@ -119,7 +119,7 @@ def test_Given_URLBruteforcer_When_RequestReturn201_Then_LoggerShowTheURL(get_mo
     logger_mock.info.assert_any_call(EXPECTED_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturn202_Then_LoggerShowTheURL(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturn202_ThenLoggerShowTheURL(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 202
     response_mock.history = None
@@ -138,7 +138,7 @@ def test_Given_URLBruteforcer_When_RequestReturn202_Then_LoggerShowTheURL(get_mo
     logger_mock.info.assert_any_call(EXPECTED_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturn203_Then_LoggerShowTheURL(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturn203_ThenLoggerShowTheURL(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 203
     response_mock.history = None
@@ -157,7 +157,7 @@ def test_Given_URLBruteforcer_When_RequestReturn203_Then_LoggerShowTheURL(get_mo
     logger_mock.info.assert_any_call(EXPECTED_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturn404ButHistoryHaveRequsest_Then_LoggerShowTheURLInHistory(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturn404ButHistoryHaveRequsest_ThenLoggerShowTheURLInHistory(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 404
     response_history_mock = mock.Mock()
@@ -179,7 +179,7 @@ def test_Given_URLBruteforcer_When_RequestReturn404ButHistoryHaveRequsest_Then_L
     logger_mock.info.assert_any_call(EXPECTED_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_StartScanningURL_Then_LoggerShowTheCurrentURL(get_mock):
+def test_GivenURLBruteforcer_WhenStartScanningURL_ThenLoggerShowTheCurrentURL(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 404
     response_mock.history = []
@@ -197,7 +197,7 @@ def test_Given_URLBruteforcer_When_StartScanningURL_Then_LoggerShowTheCurrentURL
     logger_mock.info.assert_called_with(EXPECTED_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturn404_Then_LoggerDontShowTheURL(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturn404_ThenLoggerDontShowTheURL(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 404
     response_mock.history = []
@@ -216,7 +216,7 @@ def test_Given_URLBruteforcer_When_RequestReturn404_Then_LoggerDontShowTheURL(ge
     logger_mock.info.assert_called_with(EXPECTED_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturn200ButWasRedirection_Then_LoggerShowTheURLBeforeRedirection(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturn200ButWasRedirection_ThenLoggerShowTheURLBeforeRedirection(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 200
     response_history_mock = mock.Mock()
@@ -239,7 +239,7 @@ def test_Given_URLBruteforcer_When_RequestReturn200ButWasRedirection_Then_Logger
 
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturn301ButWasRedirectionAndRemovedSlash_Then_LoggerShowTheDirectoryURL(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturn301ButWasRedirectionAndRemovedSlash_ThenLoggerShowTheDirectoryURL(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 301
     response_history_mock = mock.Mock()
@@ -261,7 +261,7 @@ def test_Given_URLBruteforcer_When_RequestReturn301ButWasRedirectionAndRemovedSl
     logger_mock.info.assert_any_call(EXPECTED_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturnURLThatEndWithSlash_Then_LoggerShowTheDirectory(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturnURLThatEndWithSlash_ThenLoggerShowTheDirectory(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 301
     response_mock.history = []
@@ -279,7 +279,7 @@ def test_Given_URLBruteforcer_When_RequestReturnURLThatEndWithSlash_Then_LoggerS
     logger_mock.info.assert_called_with(EXPECTED_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturnADirectoryToIgnore_Then_BruterforcerDontRestart(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturnADirectoryToIgnore_ThenBruterforcerDontRestart(get_mock):
     directory_to_ignore = ['js']
 
     response_mock = mock.Mock()
@@ -300,7 +300,7 @@ def test_Given_URLBruteforcer_When_RequestReturnADirectoryToIgnore_Then_Bruterfo
     logger_mock.info.assert_called_with(EXPECTED_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturnURLThatEndWithSlash_Then_BruteforcerRestartWithNewUrl(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturnURLThatEndWithSlash_ThenBruteforcerRestartWithNewUrl(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 200
     response_mock.history = None
@@ -322,7 +322,7 @@ def test_Given_URLBruteforcer_When_RequestReturnURLThatEndWithSlash_Then_Brutefo
     logger_mock.info.assert_any_call(EXPECTED_RESTART_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestADirectoryButUrlHaveDirectoryToIgnore_Then_BruterforcerRestart(get_mock):
+def test_GivenURLBruteforcer_WhenRequestADirectoryButUrlHaveDirectoryToIgnore_ThenBruterforcerRestart(get_mock):
     directory_to_ignore = ['js']
 
     response_mock = mock.Mock()
@@ -346,7 +346,7 @@ def test_Given_URLBruteforcer_When_RequestADirectoryButUrlHaveDirectoryToIgnore_
     logger_mock.info.assert_any_call(EXPECTED_RESTART_LOG)
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturnNone_Then_TheNoneIsDiscardFromList(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturnNone_ThenTheNoneIsDiscardFromList(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 404
     response_mock.history = None
@@ -364,7 +364,7 @@ def test_Given_URLBruteforcer_When_RequestReturnNone_Then_TheNoneIsDiscardFromLi
     assert logger_mock.info.call_count == 1
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestReturnTheCurrentURL_Then_TheNoneIsDiscardFromList(get_mock):
+def test_GivenURLBruteforcer_WhenRequestReturnTheCurrentURL_ThenTheNoneIsDiscardFromList(get_mock):
     response_mock = mock.Mock()
     response_mock.status_code = 200
     response_mock.history = None
@@ -384,7 +384,7 @@ def test_Given_URLBruteforcer_When_RequestReturnTheCurrentURL_Then_TheNoneIsDisc
     assert EXPECTED_NOT_LOG not in logger_mock.info.call_args_list 
 
 @mock.patch('requests.get')
-def test_Given_URLBruteforcer_When_RequestThrow_Then_ErrorIsCatchLoggerPrintError(get_mock):
+def test_GivenURLBruteforcer_WhenRequestThrow_ThenErrorIsCatchLoggerPrintError(get_mock):
     ERROR_MESSAGE = 'request get error'
     def raise_exception(url, proxies, verify):
         raise Exception(ERROR_MESSAGE)
@@ -400,3 +400,35 @@ def test_Given_URLBruteforcer_When_RequestThrow_Then_ErrorIsCatchLoggerPrintErro
 
     assert logger_mock.error.called
     logger_mock.error.assert_called_with(ERROR_MESSAGE + '. URL: ' + HOST + word_list[0])
+
+def test_GivenURLBruteforcer_WhenNotLoggingDuplicate_ThenAddFilterIsCalled():
+    logger_mock = MagicMock() 
+    logger_mock.info = MagicMock() 
+
+    word_list = ['css']
+    args = {"logger": logger_mock, "duplicate_log": False}
+    url_bruteforcer = URLBruteforcer(HOST, word_list, **args)
+
+    assert logger_mock.addFilter.assert_called
+
+def test_GivenURLBruteforcer_WhenNotLoggingDuplicate_ThenListOfLoggedMessageIsSet():
+    logger_mock = MagicMock() 
+    logger_mock.info = MagicMock() 
+
+    word_list = ['css']
+    args = {"logger": logger_mock, "duplicate_log": False}
+    url_bruteforcer = URLBruteforcer(HOST, word_list, **args)
+
+    assert hasattr(url_bruteforcer, 'logged_message')
+
+@mock.patch('requests.get')
+def test_GivenURLBruteforcer_WhenNotLoggingDuplicate_ThenFilterShouldNoDisplay(get_mock):
+    logger_mock = MagicMock() 
+    logger_mock.info = MagicMock() 
+
+    word_list = ['css']
+    args = {"logger": logger_mock, "duplicate_log": False}
+    url_bruteforcer = URLBruteforcer(HOST, word_list, **args)
+    url_bruteforcer.no_duplicate_log_filter = MagicMock(return_value="")
+    url_bruteforcer.send_requests_with_all_words() 
+    url_bruteforcer.no_duplicate_log_filter.assert_called
