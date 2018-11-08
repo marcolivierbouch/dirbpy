@@ -4,12 +4,12 @@
 import glob
 import logging
 import difflib
+import requests
 
 from logging import Logger
 from urllib.parse import urljoin, urlparse
 from multiprocessing.dummy import Pool as ThreadPool
 
-import requests
 
 def disable_https_warnings():
     import urllib3
@@ -46,7 +46,7 @@ class URLBruteforcer():
             self.logged_message = []
             self.logger.addFilter(self.no_duplicate_log_filter)
 
-    def no_duplicate_log_filter(self, record):
+    def no_duplicate_log_filter(self, record) -> bool:
         if record.msg not in self.logged_message:
             self.logged_message.append(record.msg)
             return True
@@ -63,10 +63,10 @@ class URLBruteforcer():
             if not self._is_directory_to_ignore(directory):
                 self.send_requests_with_all_words(directory)
    
-    def _generate_fat_list_with_list_of_list(self, list_of_list):
+    def _generate_fat_list_with_list_of_list(self, list_of_list: list) -> list:
         return [item for sublist in list_of_list for item in sublist]
 
-    def _generate_complete_url_with_word(self, url):
+    def _generate_complete_url_with_word(self, url: str) -> list:
         return [urljoin(url, word) for word in self.word_dictionary if word not in ('/', '')]
 
     def _is_directory_to_ignore(self, directory: str) -> bool:
@@ -102,7 +102,7 @@ class URLBruteforcer():
                         self.logger.info(self.URL_FOUND_MESSAGE.format(response_in_history.url, str(response_in_history.status_code)))
 
             if response.url not in directories_url_found:
-            # Analyse de response if we didn't print it earlier
+            # Analyse the response if we didn't print it earlier
                 if response.url.endswith('/'): 
                     self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
                     directories_url_found.append(response.url)
@@ -116,4 +116,3 @@ class URLBruteforcer():
                     self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.history[0].status_code)))
                     directories_url_found.append(response.url)
         return directories_url_found
-

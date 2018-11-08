@@ -50,4 +50,3 @@ def test_GivenWordDictionay_WhenIterSecondTime_ThenCurrentIndexIsSetAtZero():
     [word for word in word_dict]
     word_dict.__iter__()
     assert word_dict.current_index == 0
-
