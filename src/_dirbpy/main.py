@@ -11,6 +11,7 @@ import requests
 
 from _dirbpy.URLBruteforcer import URLBruteforcer
 from _dirbpy.WordDictonary import WordDictonary
+from _dirbpy.FileJSONFormatter import FileJSONFormatter
 from _dirbpy import __version__, __author__
 
 DIRBPY_COOL_LOOKING = '''
@@ -27,12 +28,13 @@ GREEN = "\033[0;32m"
 RESET = "\033[0;0m"
 
 NUMBER_OF_THREAD_PARAMETER_ERROR = 'The number of thread is to high. Current: {}, Max: {}'
+GENERATED_WORD_MESSAGE = "Generated words: {}"
 
 FORMAT = '{}[%(asctime)s]{} {}[%(levelname)s]{} %(message)s'.format(GREEN, RESET, BLUE, RESET)
 logging.basicConfig(format=FORMAT, level=logging.INFO)
 ROOT_LOGGER = logging.getLogger()
 
-def remove_none_value_in_kwargs(params_dict):
+def remove_none_value_in_kwargs(params_dict: dict) -> dict:
     return {k: v for k, v in params_dict.items() if v is not None}
 
 def do_request_with_online_file(dict_url: str, host: str, **kwargs) -> None:
@@ -46,11 +48,11 @@ def do_request_with_dictionary(file_dict, host: str, **kwargs) -> None:
 
 def use_url_bruteforcer(words: list, host: str, **kwargs) -> None:
     params = remove_none_value_in_kwargs(kwargs) 
-    ROOT_LOGGER.info('Generated words {}'.format(len(words)))
+    ROOT_LOGGER.info(GENERATED_WORD_MESSAGE.format(len(words)))
     request_handler = URLBruteforcer(host, words, **params)
     request_handler.send_requests_with_all_words()
 
-def number_of_thread(value) -> int:
+def number_of_thread(value: int) -> int:
     value = int(value)
     if value > URLBruteforcer.MAX_NUMBER_REQUEST:
         raise argparse.ArgumentError(NUMBER_OF_THREAD_PARAMETER_ERROR.format(value, URLBruteforcer.MAX_NUMBER_REQUEST))
@@ -74,7 +76,7 @@ def get_parser():
     parser.add_argument('-t', '--thread',
                         type=number_of_thread,
                         help='Number of threads the max value is {}'.format(URLBruteforcer.MAX_NUMBER_REQUEST))
-    parser.add_argument('-s', '--status_code',
+    parser.add_argument('-c', '--status_code',
                         nargs='*',
                         type=int,
                         help='List of status code to accept the default list is: {}'.format(URLBruteforcer.VALID_STATUS_CODE))
@@ -96,6 +98,10 @@ def get_parser():
     parser.add_argument('--no_duplicate',
                         action='store_false',
                         help='Don\'t display duplicate log')
+    parser.add_argument('-s', '--save',
+                        type=str,
+                        help='Output file.')
+
     return parser
 
 def get_parsed_args(parser, args):
@@ -129,6 +135,12 @@ def main():
         dict_url = args.online
 
     params = {"nb_thread": args.thread, "status_code": status_code, "proxy": proxy, "directories_to_ignore": directories_to_ignore, "duplicate_log": args.no_duplicate}
+
+    if args.save:
+        file_handler = logging.FileHandler(args.save)
+        formatter = FileJSONFormatter()
+        file_handler.setFormatter(formatter)
+        ROOT_LOGGER.addHandler(file_handler)
 
     if args.directory:
         for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):

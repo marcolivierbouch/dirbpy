@@ -23,6 +23,7 @@ setuptools.setup(
     install_requires=[
         "argparse",
         "requests",
+        "JSON-log-formatter",
     ],
     classifiers=[
         "Programming Language :: Python :: 3.7",

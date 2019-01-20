@@ -403,7 +403,7 @@ def test_GivenURLBruteforcer_WhenRequestThrow_ThenErrorIsCatchLoggerPrintError(g
     url_bruteforcer.send_requests_with_all_words()
 
     assert logger_mock.error.called
-    logger_mock.error.assert_called_with(ERROR_MESSAGE + '. URL: ' + HOST + word_list[0])
+    logger_mock.error.assert_called_with(ERROR_MESSAGE + '. URL: ' + HOST + word_list[0], exc_info=True )
 
 def test_GivenURLBruteforcer_WhenNotLoggingDuplicate_ThenAddFilterIsCalled():
     logger_mock = MagicMock() 

@@ -18,8 +18,8 @@ def disable_https_warnings():
 class URLBruteforcer():
     MAX_NUMBER_REQUEST = 30
     VALID_STATUS_CODE = [200, 201, 202, 203, 301, 302, 400, 401, 403, 405, 500]
-    DIRECTORY_FOUND_MESSAGE = '++ Directory => {} (Status code: {})'
-    URL_FOUND_MESSAGE = '+ {} (Status code: {})'
+    DIRECTORY_FOUND_MESSAGE = 'Directory => {} (Status code: {})'
+    URL_FOUND_MESSAGE = '{} (Status code: {})'
     SCANNING_URL_MESSAGE = 'Scanning URL: {}'
     PROXY_DEFAULT_DICT = {'https': None, 'http': None}
 
@@ -82,7 +82,7 @@ class URLBruteforcer():
         try:
             response = requests.get(complete_url, proxies=self.proxy, verify=False)
         except Exception as e:
-            self.logger.error(str(e) + '. URL: {}'.format(complete_url))
+            self.logger.error(str(e) + '. URL: {}'.format(complete_url), exc_info=True)
             return []
         else:
             return self._analyse_response(response)

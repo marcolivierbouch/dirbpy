@@ -1,10 +1,11 @@
 __all__ = [
     "URLBruteforcer", 
     "main",
-    "WordDictonary"
+    "WordDictonary",
+    "FileJSONFormatter"
 ]
 
-__version__ = '1.5.1'
+__version__ = '1.6.0'
 
 __author__ = "Marc-Olivier Bouchard"
 
