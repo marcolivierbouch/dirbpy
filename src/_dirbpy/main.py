@@ -11,6 +11,7 @@ import requests
 
 from _dirbpy.URLBruteforcer import URLBruteforcer
 from _dirbpy.WordDictonary import WordDictonary
+from _dirbpy.FileJSONFormatter import FileJSONFormatter
 from _dirbpy import __version__, __author__
 
 DIRBPY_COOL_LOOKING = '''
