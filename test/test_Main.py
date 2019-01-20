@@ -54,7 +54,7 @@ def test_GivenGetArgumentParser_ThenThreadArgumentIsAdded(argument_parser_mock):
 @mock.patch('argparse.ArgumentParser')
 def test_GivenGetArgumentParser_ThenStatusCodeArgumentIsAdded(argument_parser_mock):
     parser = get_parser()
-    assert is_arg_in_parser_call(parser, '-s')
+    assert is_arg_in_parser_call(parser, '-c')
     assert is_arg_in_parser_call(parser, '--status_code')
 
 @mock.patch('argparse.ArgumentParser')
@@ -79,6 +79,12 @@ def test_GivenGetArgumentParser_ThenIgnoreStatusCodeArgumentIsAdded(argument_par
 def test_GivenGetArgumentParser_ThenNoDuplicateLogOptionAdded(argument_parser_mock):
     parser = get_parser()
     assert is_arg_in_parser_call(parser, '--no_duplicate')
+
+@mock.patch('argparse.ArgumentParser')
+def test_GivenGetArgumentParser_ThenNoDuplicateLogOptionAdded(argument_parser_mock):
+    parser = get_parser()
+    assert is_arg_in_parser_call(parser, '-s')
+    assert is_arg_in_parser_call(parser, '--save')
 
 def test_GivenArgumentParserRule_WhenNumberOfThreadIsToHigh_ThenErrorIsThrowed():
     try:

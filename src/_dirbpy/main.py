@@ -32,7 +32,7 @@ FORMAT = '{}[%(asctime)s]{} {}[%(levelname)s]{} %(message)s'.format(GREEN, RESET
 logging.basicConfig(format=FORMAT, level=logging.INFO)
 ROOT_LOGGER = logging.getLogger()
 
-def remove_none_value_in_kwargs(params_dict):
+def remove_none_value_in_kwargs(params_dict: dict) -> dict:
     return {k: v for k, v in params_dict.items() if v is not None}
 
 def do_request_with_online_file(dict_url: str, host: str, **kwargs) -> None:
@@ -50,7 +50,7 @@ def use_url_bruteforcer(words: list, host: str, **kwargs) -> None:
     request_handler = URLBruteforcer(host, words, **params)
     request_handler.send_requests_with_all_words()
 
-def number_of_thread(value) -> int:
+def number_of_thread(value: int) -> int:
     value = int(value)
     if value > URLBruteforcer.MAX_NUMBER_REQUEST:
         raise argparse.ArgumentError(NUMBER_OF_THREAD_PARAMETER_ERROR.format(value, URLBruteforcer.MAX_NUMBER_REQUEST))
@@ -74,7 +74,7 @@ def get_parser():
     parser.add_argument('-t', '--thread',
                         type=number_of_thread,
                         help='Number of threads the max value is {}'.format(URLBruteforcer.MAX_NUMBER_REQUEST))
-    parser.add_argument('-s', '--status_code',
+    parser.add_argument('-c', '--status_code',
                         nargs='*',
                         type=int,
                         help='List of status code to accept the default list is: {}'.format(URLBruteforcer.VALID_STATUS_CODE))
@@ -96,6 +96,10 @@ def get_parser():
     parser.add_argument('--no_duplicate',
                         action='store_false',
                         help='Don\'t display duplicate log')
+    parser.add_argument('-s', '--save',
+                        type=str,
+                        help='Output file.')
+
     return parser
 
 def get_parsed_args(parser, args):
@@ -129,6 +133,10 @@ def main():
         dict_url = args.online
 
     params = {"nb_thread": args.thread, "status_code": status_code, "proxy": proxy, "directories_to_ignore": directories_to_ignore, "duplicate_log": args.no_duplicate}
+
+    if args.save:
+        file_handler = logging.FileHandler(args.save)
+        ROOT_LOGGER.addHandler(file_handler)
 
     if args.directory:
         for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):
