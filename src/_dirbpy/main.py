@@ -28,6 +28,7 @@ GREEN = "\033[0;32m"
 RESET = "\033[0;0m"
 
 NUMBER_OF_THREAD_PARAMETER_ERROR = 'The number of thread is to high. Current: {}, Max: {}'
+GENERATED_WORD_MESSAGE = "Generated words: {}"
 
 FORMAT = '{}[%(asctime)s]{} {}[%(levelname)s]{} %(message)s'.format(GREEN, RESET, BLUE, RESET)
 logging.basicConfig(format=FORMAT, level=logging.INFO)
@@ -47,7 +48,7 @@ def do_request_with_dictionary(file_dict, host: str, **kwargs) -> None:
 
 def use_url_bruteforcer(words: list, host: str, **kwargs) -> None:
     params = remove_none_value_in_kwargs(kwargs) 
-    ROOT_LOGGER.info('Generated words {}'.format(len(words)))
+    ROOT_LOGGER.info(GENERATED_WORD_MESSAGE.format(len(words)))
     request_handler = URLBruteforcer(host, words, **params)
     request_handler.send_requests_with_all_words()
 
@@ -137,6 +138,8 @@ def main():
 
     if args.save:
         file_handler = logging.FileHandler(args.save)
+        formatter = FileJSONFormatter()
+        file_handler.setFormatter(formatter)
         ROOT_LOGGER.addHandler(file_handler)
 
     if args.directory:

@@ -82,7 +82,7 @@ class URLBruteforcer():
         try:
             response = requests.get(complete_url, proxies=self.proxy, verify=False)
         except Exception as e:
-            self.logger.error(str(e) + '. URL: {}'.format(complete_url))
+            self.logger.error(str(e) + '. URL: {}'.format(complete_url), exc_info=True)
             return []
         else:
             return self._analyse_response(response)
