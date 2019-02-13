@@ -116,3 +116,4 @@ class URLBruteforcer():
                     self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.history[0].status_code)))
                     directories_url_found.append(response.url)
         return directories_url_found
+

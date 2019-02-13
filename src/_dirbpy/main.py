@@ -62,28 +62,27 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', '--url',
                         type=str,
-                        required=True,
                         help='This is the url to scan')
     parser.add_argument('-f', '--file',
-                        type=argparse.FileType('r'),
+                        type=str,
                         help='Input file with words.')
     parser.add_argument('-o', '--online',
                         type=str,
                         help='URL with raw dictionary')
     parser.add_argument('-d', '--directory',
                         type=str,
-                        help='Input directory with dictionary (.txt).')
+                        help='Input directory with dictionaries (.txt).')
     parser.add_argument('-t', '--thread',
                         type=number_of_thread,
-                        help='Number of threads the max value is {}'.format(URLBruteforcer.MAX_NUMBER_REQUEST))
+                        help='Number of thread, the max value is {}'.format(URLBruteforcer.MAX_NUMBER_REQUEST))
     parser.add_argument('-c', '--status_code',
                         nargs='*',
                         type=int,
-                        help='List of status code to accept the default list is: {}'.format(URLBruteforcer.VALID_STATUS_CODE))
+                        help='Status codes list to accept, the default list is: {}'.format(URLBruteforcer.VALID_STATUS_CODE))
     parser.add_argument('-r', '--remove_status_code',
                         nargs='*',
                         type=int,
-                        help='List of status code to remove from list')
+                        help='Status codes list to remove from original list')
     parser.add_argument('-p', '--proxy',
                         nargs='*',
                         type=str,
@@ -97,10 +96,13 @@ def get_parser():
                         version='%(prog)s {version}'.format(version=__version__))
     parser.add_argument('--no_duplicate',
                         action='store_false',
-                        help='Don\'t display duplicate log')
+                        help='Don\'t display duplicate logs')
     parser.add_argument('-s', '--save',
                         type=str,
                         help='Output file.')
+    parser.add_argument('--hosts_file',
+                        type=argparse.FileType('r'),
+                        help='File with urls to scan')
 
     return parser
 
@@ -109,6 +111,9 @@ def get_parsed_args(parser, args):
 
     if not args_parsed.directory and not args_parsed.file and not args_parsed.online:
         parser.error('Need a file (-f/--file) or a directory (-d/--directory) or an online file (-o/--online) as input.')
+
+    if not args_parsed.url and not args_parsed.hosts_file:
+        parser.error('Need an url (-u/--url) or a hosts file (--hosts_file)')
 
     return args_parsed
 
@@ -120,7 +125,6 @@ def main():
     parser = get_parser()
     args = get_parsed_args(parser, sys.argv[1:])
 
-    host = args.url
     proxy = args.proxy[0] if args.proxy else None
 
     status_code = None
@@ -142,12 +146,18 @@ def main():
         file_handler.setFormatter(formatter)
         ROOT_LOGGER.addHandler(file_handler)
 
-    if args.directory:
-        for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):
-            ROOT_LOGGER.info('Current file: {}'.format(file))
-            do_request_with_dictionary(open(file, 'r'), host, **params) 
-    elif dict_url:
-        do_request_with_online_file(dict_url, host, **params)
-    else:
-        do_request_with_dictionary(args.file, host, **params)
+    hosts = []
+    if args.hosts_file:
+        hosts = args.hosts_file.readlines()
+        hosts = [host.rstrip('\n') for host in hosts]
+
+    for host in hosts or [args.url]:
+        if args.directory:
+            for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):
+                ROOT_LOGGER.info('Current file: {}'.format(file))
+                do_request_with_dictionary(open(file, 'r'), host, **params) 
+        elif dict_url:
+            do_request_with_online_file(dict_url, host, **params)
+        else:
+            do_request_with_dictionary(open(args.file, 'r'), host, **params)
 
