@@ -81,10 +81,16 @@ def test_GivenGetArgumentParser_ThenNoDuplicateLogOptionAdded(argument_parser_mo
     assert is_arg_in_parser_call(parser, '--no_duplicate')
 
 @mock.patch('argparse.ArgumentParser')
-def test_GivenGetArgumentParser_ThenNoDuplicateLogOptionAdded(argument_parser_mock):
+def test_GivenGetArgumentParser_ThenSaveOptionIsAdded(argument_parser_mock):
     parser = get_parser()
     assert is_arg_in_parser_call(parser, '-s')
     assert is_arg_in_parser_call(parser, '--save')
+
+@mock.patch('argparse.ArgumentParser')
+def test_GivenGetArgumentParser_ThenReadHostFromFile(argument_parser_mock):
+    parser = get_parser()
+    assert is_arg_in_parser_call(parser, '--hosts_file')
+
 
 def test_GivenArgumentParserRule_WhenNumberOfThreadIsToHigh_ThenErrorIsThrowed():
     try:
@@ -134,3 +140,4 @@ def test_GivenGetParsedArgument_WhenOnlineFileOptionNotAdded_ThenProgramExitAndA
     parser.error = MagicMock()
     args = get_parsed_args(parser, ['-u', 'test.com'])
     parser.error.assert_called_with(AnyStringWith('-o/--online'))
+
