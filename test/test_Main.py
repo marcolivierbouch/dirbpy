@@ -141,3 +141,20 @@ def test_GivenGetParsedArgument_WhenOnlineFileOptionNotAdded_ThenProgramExitAndA
     args = get_parsed_args(parser, ['-u', 'test.com'])
     parser.error.assert_called_with(AnyStringWith('-o/--online'))
 
+def test_GivenGetParsedArgument_WhenUrlOptionIsNotAdded_ThenProgramExitAndAskForUrl():
+    parser = get_parser()
+    parser.error = MagicMock()
+    args = get_parsed_args(parser, ['-f', 'file.txt'])
+    parser.error.assert_called_with(AnyStringWith('-u/--url'))
+
+@mock.patch('requests.get')
+def test_GivenMain_WhenDoRequestWithOnlineFile_ThenRequestGetIsCalled(get_mock):
+    do_request_with_online_file('file', 'host')
+    get_mock.assert_called()
+
+@mock.patch('requests.get')
+def test_GivenMain_WhenUseUrlBruteforce_ThenLoggerIsCalled(get_mock):
+    ROOT_LOGGER.info = mock.Mock()
+    use_url_bruteforcer('file', 'host')
+    ROOT_LOGGER.info.assert_called()
+
