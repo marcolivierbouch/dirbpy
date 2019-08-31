@@ -12,5 +12,8 @@
 /__pycache__/
 .pytest_cache/
 
+# Coverage files
+.coverage.*
+coverage.*
 .coverage
 .tox/
