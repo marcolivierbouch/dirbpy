@@ -34,17 +34,21 @@ FORMAT = '{}[%(asctime)s]{} {}[%(levelname)s]{} %(message)s'.format(GREEN, RESET
 logging.basicConfig(format=FORMAT, level=logging.INFO)
 ROOT_LOGGER = logging.getLogger()
 
+
 def remove_none_value_in_kwargs(params_dict: dict) -> dict:
     return {k: v for k, v in params_dict.items() if v is not None}
+
 
 def do_request_with_online_file(dict_url: str, host: str, **kwargs) -> None:
     data = requests.get(dict_url)
     dict_list = str(data.content).replace('\\r', ' ').replace('\\n', ' ').split()
     use_url_bruteforcer(dict_list, host, **kwargs)
 
+
 def do_request_with_dictionary(file_dict, host: str, **kwargs) -> None:
     word_dictionary = WordDictonary(file_dict)
     use_url_bruteforcer(word_dictionary, host, **kwargs)
+
 
 def use_url_bruteforcer(words: list, host: str, **kwargs) -> None:
     params = remove_none_value_in_kwargs(kwargs) 
@@ -52,11 +56,13 @@ def use_url_bruteforcer(words: list, host: str, **kwargs) -> None:
     request_handler = URLBruteforcer(host, words, **params)
     request_handler.send_requests_with_all_words()
 
+
 def number_of_thread(value: int) -> int:
     value = int(value)
     if value > URLBruteforcer.MAX_NUMBER_REQUEST:
-        raise argparse.ArgumentError(NUMBER_OF_THREAD_PARAMETER_ERROR.format(value, URLBruteforcer.MAX_NUMBER_REQUEST))
+        raise argparse.ArgumentTypeError(NUMBER_OF_THREAD_PARAMETER_ERROR.format(value, URLBruteforcer.MAX_NUMBER_REQUEST))
     return value
+
 
 def get_parser():
     parser = argparse.ArgumentParser()
@@ -75,11 +81,11 @@ def get_parser():
     parser.add_argument('-t', '--thread',
                         type=number_of_thread,
                         help='Number of thread, the max value is {}'.format(URLBruteforcer.MAX_NUMBER_REQUEST))
-    parser.add_argument('-c', '--status_code',
+    parser.add_argument('-c', '--status-code',
                         nargs='*',
                         type=int,
                         help='Status codes list to accept, the default list is: {}'.format(URLBruteforcer.VALID_STATUS_CODE))
-    parser.add_argument('-r', '--remove_status_code',
+    parser.add_argument('-r', '--remove-status-code',
                         nargs='*',
                         type=int,
                         help='Status codes list to remove from original list')
@@ -94,17 +100,18 @@ def get_parser():
     parser.add_argument('-v', '--version',
                         action='version',
                         version='%(prog)s {version}'.format(version=__version__))
-    parser.add_argument('--no_duplicate',
+    parser.add_argument('--no-duplicate',
                         action='store_false',
                         help='Don\'t display duplicate logs')
     parser.add_argument('-s', '--save',
                         type=str,
                         help='Output file.')
-    parser.add_argument('--hosts_file',
+    parser.add_argument('--hosts-file',
                         type=argparse.FileType('r'),
                         help='File with urls to scan')
 
     return parser
+
 
 def get_parsed_args(parser, args):
     args_parsed = parser.parse_args(args)
@@ -116,6 +123,7 @@ def get_parsed_args(parser, args):
         parser.error('Need an url (-u/--url) or a hosts file (--hosts_file)')
 
     return args_parsed
+
 
 def main():
     print(DIRBPY_COOL_LOOKING)
@@ -138,7 +146,13 @@ def main():
     if args.online:
         dict_url = args.online
 
-    params = {"nb_thread": args.thread, "status_code": status_code, "proxy": proxy, "directories_to_ignore": directories_to_ignore, "duplicate_log": args.no_duplicate}
+    params = {
+              "nb_thread": args.thread,
+              "status_code": status_code,
+              "proxy": proxy,
+              "directories_to_ignore": directories_to_ignore,
+              "duplicate_log": args.no_duplicate
+             }
 
     if args.save:
         file_handler = logging.FileHandler(args.save)
@@ -155,9 +169,11 @@ def main():
         if args.directory:
             for file in glob.glob("{}*.txt".format(args.directory if args.directory.endswith('/') else args.directory + '/')):
                 ROOT_LOGGER.info('Current file: {}'.format(file))
-                do_request_with_dictionary(open(file, 'r'), host, **params) 
+                with open(file, 'r') as opened_file:
+                    do_request_with_dictionary(opened_file, host, **params) 
         elif dict_url:
             do_request_with_online_file(dict_url, host, **params)
         else:
-            do_request_with_dictionary(open(args.file, 'r'), host, **params)
+            with open(args.file, 'r') as opened_file:
+                do_request_with_dictionary(opened_file, host, **params)
 
