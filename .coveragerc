@@ -1,2 +1,8 @@
 [run]
 source = src/_dirbpy/
+omit =
+    *__init__*
+
+[report]
+exclude_lines = 
+    if __name__ == .__main__.:
