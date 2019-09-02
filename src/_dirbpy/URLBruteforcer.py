@@ -87,22 +87,28 @@ class URLBruteforcer():
         else:
             return self._analyse_response(response)
             
+    def _response_has_valid_status_code(self, response) -> bool:
+        return response.status_code in self.status_code
+
     def _analyse_response(self, response) -> list:
         directories_url_found = []
-        if response.status_code in self.status_code:
-            # We need to check for redirection if we are redirected we want the first url
+        if self._response_has_valid_status_code(response):
+            # We need to check for redirection, if we are redirected we want the first url
             # Normaly get redirected it returns a 200 status_code but it not always the real status code
             if response.history:
                 for response_in_history in response.history:
-                    response_removed = response.url.replace(response_in_history.url, '')
-                    if response_removed == '/':
+                    # Check if it's the same path
+                    response_removed_url = response.url.replace(response_in_history.url, '')
+                    if response_removed_url == '/':
                         self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
                         directories_url_found.append(response.url)
                     else:
-                        self.logger.info(self.URL_FOUND_MESSAGE.format(response_in_history.url, str(response_in_history.status_code)))
+                        # Sometimes the response contains invalid status code
+                        if self._response_has_valid_status_code(response_in_history):
+                            self.logger.info(self.URL_FOUND_MESSAGE.format(response_in_history.url, str(response_in_history.status_code)))
 
-            if response.url not in directories_url_found:
             # Analyse the response if we didn't print it earlier
+            if response.url not in directories_url_found:
                 if response.url.endswith('/'): 
                     self.logger.info(self.DIRECTORY_FOUND_MESSAGE.format(response.url, str(response.status_code)))
                     directories_url_found.append(response.url)
