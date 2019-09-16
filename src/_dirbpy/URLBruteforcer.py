@@ -16,12 +16,14 @@ def disable_https_warnings():
     urllib3.disable_warnings()
 
 class URLBruteforcer():
+    HTTPS_STR = 'https'
+    HTTP_STR = 'http'
     MAX_NUMBER_REQUEST = 30
     VALID_STATUS_CODE = [200, 201, 202, 203, 301, 302, 400, 401, 403, 405, 500, 503]
     DIRECTORY_FOUND_MESSAGE = 'Directory => {} (Status code: {})'
     URL_FOUND_MESSAGE = '{} (Status code: {})'
     SCANNING_URL_MESSAGE = 'Scanning URL: {}'
-    PROXY_DEFAULT_DICT = {'https': None, 'http': None}
+    PROXY_DEFAULT_DICT = {HTTPS_STR: None, HTTP_STR: None}
 
     def __init__(self, host:            str,
                  word_dictionary:       list,
@@ -39,7 +41,13 @@ class URLBruteforcer():
         self.status_code = status_code
         self.nb_thread = nb_thread
         self.request_pool = ThreadPool(self.nb_thread)
-        self.proxy = proxy
+        if proxy == self.PROXY_DEFAULT_DICT:
+            self.proxy = proxy
+        else:
+            self.proxy = self.PROXY_DEFAULT_DICT
+            self.proxy[self.HTTPS_STR] = proxy
+            self.proxy[self.HTTP_STR] = proxy.replace(self.HTTPS_STR, self.HTTP_STR)
+
         self.directories_to_ignore = directories_to_ignore
         self.logger = logger
         if not duplicate_log:

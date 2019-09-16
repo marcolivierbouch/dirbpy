@@ -86,6 +86,18 @@ class TestURLBruteforcer:
         url_bruteforcer = URLBruteforcer(HOST, words)
         url_bruteforcer.send_requests_with_all_words()
         assert False == get_mock.called
+
+    @mock.patch('requests.get')
+    def test_GivenURLBruteforcer_WhenCreatedWithProxy_ThenGetIsCalledWithProxy(self, get_mock):
+        words = ['js']
+        current_proxy = URLBruteforcer.PROXY_DEFAULT_DICT
+        current_proxy[URLBruteforcer.HTTP_STR] = 'http://localhost'
+        current_proxy[URLBruteforcer.HTTPS_STR] = 'https://localhost'
+
+        url_bruteforcer = URLBruteforcer(HOST, words, proxy=current_proxy)
+        url_bruteforcer.send_requests_with_all_words()
+
+        assert current_proxy == get_mock.call_args_list[0][1]['proxies']
     
     @mock.patch('requests.get')
     def test_GivenURLBruteforcer_WhenRequestReturns200_ThenLoggerShowTheURL(self, get_mock):

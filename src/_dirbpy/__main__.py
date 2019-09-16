@@ -133,7 +133,11 @@ def main():
     parser = get_parser()
     args = get_parsed_args(parser, sys.argv[1:])
 
-    proxy = args.proxy[0] if args.proxy else None
+    if args.proxy:
+        proxy = args.proxy[0]
+        print(f'Using proxy: {proxy}\n')
+    else:
+        proxy = None
 
     status_code = None
     if args.status_code:
