@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import glob
@@ -41,12 +40,13 @@ class URLBruteforcer():
         self.status_code = status_code
         self.nb_thread = nb_thread
         self.request_pool = ThreadPool(self.nb_thread)
+
         if proxy == self.PROXY_DEFAULT_DICT:
             self.proxy = proxy
         else:
             self.proxy = self.PROXY_DEFAULT_DICT
-            self.proxy[self.HTTPS_STR] = proxy
-            self.proxy[self.HTTP_STR] = proxy.replace(self.HTTPS_STR, self.HTTP_STR)
+            self.proxy[self.HTTPS_STR] = self._url_to_https(proxy)
+            self.proxy[self.HTTP_STR] = self._url_to_http(proxy)
 
         self.directories_to_ignore = directories_to_ignore
         self.logger = logger
@@ -70,6 +70,12 @@ class URLBruteforcer():
         for directory in dir_filtered:
             if not self._is_directory_to_ignore(directory):
                 self.send_requests_with_all_words(directory)
+
+    def _url_to_https(self, url: str) -> str:
+        return url.replace(self.HTTP_STR, self.HTTPS_STR)
+
+    def _url_to_http(self, url: str) -> str:
+        return url.replace(self.HTTPS_STR, self.HTTP_STR)
    
     def _generate_fat_list_with_list_of_list(self, list_of_list: list) -> list:
         return [item for sublist in list_of_list for item in sublist]
