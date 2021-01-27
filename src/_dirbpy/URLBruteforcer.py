@@ -29,10 +29,12 @@ class URLBruteforcer():
                  nb_thread:             int    = MAX_NUMBER_REQUEST,
                  status_code:           list   = VALID_STATUS_CODE,
                  proxy:                 dict   = PROXY_DEFAULT_DICT,
+                 cookies:               dict   = {},
                  directories_to_ignore: list   = [],
                  logger:                Logger = logging.getLogger(__name__),
                  duplicate_log:         bool   = True):
-
+        
+        self.cookies = cookies
         self.host = host
         if 'https' in urlparse(self.host).scheme:
             disable_https_warnings()
@@ -47,7 +49,6 @@ class URLBruteforcer():
             self.proxy = self.PROXY_DEFAULT_DICT
             self.proxy[self.HTTPS_STR] = self._url_to_https(proxy)
             self.proxy[self.HTTP_STR] = self._url_to_http(proxy)
-
         self.directories_to_ignore = directories_to_ignore
         self.logger = logger
         if not duplicate_log:
@@ -94,7 +95,7 @@ class URLBruteforcer():
 
     def _request_thread(self, complete_url: str) -> list:
         try:
-            response = requests.get(complete_url, proxies=self.proxy, verify=False)
+            response = requests.get(complete_url, proxies=self.proxy, verify=False, cookies=self.cookies)
         except Exception as e:
             self.logger.error(str(e) + '. URL: {}'.format(complete_url), exc_info=True)
             return []
