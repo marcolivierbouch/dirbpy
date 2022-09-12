@@ -38,6 +38,16 @@ ROOT_LOGGER = logging.getLogger()
 def remove_none_value_in_kwargs(params_dict: dict) -> dict:
     return {k: v for k, v in params_dict.items() if v is not None}
 
+def parse_cookies(cookies_list):
+    cookies_dict = dict()
+    try:
+        for cookie in cookies_list:
+            pair = cookie.split("=")
+            cookies_dict[pair[0]] = pair[1]
+        return cookies_dict
+    except:
+        print("Cannot parse cookies {}.".format(cookies_list))
+        return None
 
 def do_request_with_online_file(dict_url: str, host: str, **kwargs) -> None:
     data = requests.get(dict_url)
@@ -93,6 +103,10 @@ def get_parser():
                         nargs='*',
                         type=str,
                         help='Specify the url of the proxy if you want to use one. (Ex: localhost:8080)')
+    parser.add_argument('-C', '--cookies',
+                        nargs='*',
+                        type=str,
+                        help='Specify the cookies separated by a space if you want to use them. (Ex: cookie1=value cookie2=othervalue)')
     parser.add_argument('-i', '--ignore',
                         nargs='*',
                         type=str,
@@ -138,7 +152,10 @@ def main():
         print(f'Using proxy: {proxy}\n')
     else:
         proxy = None
-
+    if args.cookies:
+        cookies = parse_cookies(args.cookies)
+    else:
+        cookies = None
     status_code = None
     if args.status_code:
         status_code = args.status_code
@@ -154,6 +171,7 @@ def main():
               "nb_thread": args.thread,
               "status_code": status_code,
               "proxy": proxy,
+              "cookies": cookies,
               "directories_to_ignore": directories_to_ignore,
               "duplicate_log": args.no_duplicate
              }
